@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Poor WSGI homepage documentation">
+    <meta name="author" content="Ondřej Tůma McBig">
+
+    <title>Poor WSGI for Python</title>
+
+    <link href="style.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <div class="page">
+
+      <div class="header">
+        <h1>Poor WSGI for Python</h1>
+        <small>Light WSGI connector with uri routing support.</small>
+        <div class="pannel">
+          <menu class="main">
+            <span class="item "><a href="index.html" title="" >Documentation</a></span>
+            <span class="item selected"><a href="api.html" title="" >Api Reference</a></span>
+            <span class="item "><a href="licence.html" title="">Licence</a></span>
+            <span class="item"><a href="https://github.com/PoorHttp/PoorWSGI">GitHub</a></span>
+            <span class="item"><a href="https://github.com/PoorHttp/PoorWSGI/issues">GitHub::Issues</a></span>
+            <span class="item"><a href="https://pypi.python.org/pypi/PoorWSGI">PyPI</a></span>
+          </menu>        </div>      </div>
+
+      <menu class="sidebar">
+<h2><a href="#poorwsgi">poorwsgi</a></h2>
+<h2><a href="#wsgi">wsgi</a></h2>
+<h3><a href="#Application">Application</a></h3>
+<h2><a href="#request">request</a></h2>
+<h3><a href="#Args">Args</a></h3>
+<h3><a href="#BrokenClientConnection">BrokenClientConnection</a></h3>
+<h3><a href="#EmptyForm">EmptyForm</a></h3>
+<h3><a href="#FieldStorage">FieldStorage</a></h3>
+<h3><a href="#Headers">Headers</a></h3>
+<h3><a href="#Json">Json</a></h3>
+<h3><a href="#Request">Request</a></h3>
+<h2><a href="#results">results</a></h2>
+<h3><a href="#SERVER_RETURN">SERVER_RETURN</a></h3>
+<h3><a href="#bad_request">bad_request</a></h3>
+<h3><a href="#cmp">cmp</a></h3>
+<h3><a href="#debug_info">debug_info</a></h3>
+<h3><a href="#directory_index">directory_index</a></h3>
+<h3><a href="#forbidden">forbidden</a></h3>
+<h3><a href="#handlers_view">handlers_view</a></h3>
+<h3><a href="#hbytes">hbytes</a></h3>
+<h3><a href="#html_escape">html_escape</a></h3>
+<h3><a href="#human_methods_">human_methods_</a></h3>
+<h3><a href="#internal_server_error">internal_server_error</a></h3>
+<h3><a href="#method_not_allowed">method_not_allowed</a></h3>
+<h3><a href="#not_found">not_found</a></h3>
+<h3><a href="#not_implemented">not_implemented</a></h3>
+<h3><a href="#not_modified">not_modified</a></h3>
+<h3><a href="#redirect">redirect</a></h3>
+<h3><a href="#send_file">send_file</a></h3>
+<h3><a href="#send_json">send_json</a></h3>
+<h3><a href="#uni">uni</a></h3>
+<h2><a href="#session">session</a></h2>
+<h3><a href="#NoCompress">NoCompress</a></h3>
+<h3><a href="#PoorSession">PoorSession</a></h3>
+<h3><a href="#hidden">hidden</a></h3>
+<h2><a href="#state">state</a></h2>
+      </menu><!-- sidebar --!>
+
+    <div class="content">
+    <h2 class="module"><i>module</i> poorwsgi
+      <span class="links">
+        <a name="poorwsgi" href="#poorwsgi">link</a> |
+        <a href="#">top</a></span></h2>
+    <div class="module">Poor WSGI connector for Python<br><br>
+
+Current Contents:
+<pre class="text">
+    * <a href="#request" title="module">request</a> - <a href="#Headers" title="class">Headers</a>, <a href="#Request" title="class">Request</a> and <a href="#FieldStorage" title="class">FieldStorage</a> classes, which
+                is used for managing requests.
+
+    * <a href="#results" title="module">results</a> - default result handlers of connector like: directory index,
+                <a href="#send_file" title="(req, path, content_type=None)">send_file</a>, <a href="#SERVER_RETURN" title="class">SERVER_RETURN</a>, <a href="#redirect" title="(req, uri, permanent=0, text=None)">redirect</a>, servers errors or debug
+                output handler.
+
+    * <a href="#session" title="module">session</a> - self-contained cookie based <a href="#session" title="module">session</a> class
+
+    * <a href="#state" title="module">state</a>   - constants like http status code, log <a href="#levels" title="{'emerg': (0, 'S'), 'alert': (1, 'A'), 'crit': (2, 'C'), 'error': (3, 'E'), 'warn': (4, 'W'), 'notice': (5, 'N'), 'info': (6, 'I'), 'debug': (7, 'D')}">levels</a> and method types
+
+    * <a href="#wsgi" title="module">wsgi</a>    - <a href="#Application" title="class">Application</a> callable class, which is the main point for
+                <a href="#poorwsgi" title="module">poorwsgi</a> web <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a>.</pre></div>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence"><a href="#poorwsgi" title="module">poorwsgi</a>.<a href="#results" title="module">results</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence"><a href="#poorwsgi" title="module">poorwsgi</a>.<a href="#wsgi" title="module">wsgi</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule"><a href="#request" title="module">request</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule"><a href="#results" title="module">results</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence"><a href="#results" title="module">results</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule"><a href="#state" title="module">state</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule"><a href="#wsgi" title="module">wsgi</a></span>
+    <h4 class="variable">app = __poorwsgi__ - callable Application class instance
+      <span class="links">
+        <a name="app"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable">Short reference to <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> instance ( <b>DEPRECATED</b> )</div>
+    <h4 class="variable">application = __poorwsgi__ - callable Application class instance
+      <span class="links">
+        <a name="application"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"><a href="#Application" title="class">Application</a> callable instance, which is need by <a href="#wsgi" title="module">wsgi</a> server ( <b>DEPRECATED</b> )</div>
+    <h2 class="module"><i>module</i> wsgi
+      <span class="links">
+        <a name="wsgi" href="#wsgi">link</a> |
+        <a href="#">top</a></span></h2>
+    <div class="module"><a href="#Application" title="class">Application</a> callable class, which is the main point for <a href="#poorwsgi" title="module">poorwsgi</a> web
+<a href="#application" title="__poorwsgi__ - callable Application class instance">application</a>.</div>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">collections</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule">path</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence"><a href="#poorwsgi" title="module">poorwsgi</a>.<a href="#request" title="module">request</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence"><a href="#poorwsgi" title="module">poorwsgi</a>.<a href="#results" title="module">results</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">posix</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule">re</span>
+    <h3 class="class"><i>class</i> Application
+      <span class="links">
+        <a name="Application" href="#Application">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Poor WSGI <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> which is called by WSGI server.<br><br>
+
+Working of is describe in <a href="http://www.python.org/dev/peps/pep-0333/">PEP 333</a>. This object store route dispatch table,
+and have <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> for it's using and of course __call__ method for use
+as WSGI <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a>.</div>
+    <h4 class="property">auto_args <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.auto_args"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Automatic parsing <a href="#request" title="module">request</a> arguments from uri.<br><br>
+
+If it is True (default), <a href="#Request" title="class">Request</a> object do automatic parsing <a href="#request" title="module">request</a>
+uri to its args variable.</div>
+    <h4 class="property">auto_cookies <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.auto_cookies"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Automatic parsing cookies from <a href="#request" title="module">request</a> headers.<br><br>
+
+If it is True (default) and Cookie <a href="#request" title="module">request</a> header was set,
+SimpleCookie object was paresed to <a href="#Request" title="class">Request</a> property cookies.</div>
+    <h4 class="property">auto_form <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.auto_form"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Automatic parsing arguments from <a href="#request" title="module">request</a> body.<br><br>
+
+If it is True (default) and method is POST, PUT or PATCH, and
+<a href="#request" title="module">request</a> content type is one of form_content_types, <a href="#Request" title="class">Request</a>
+object do automatic parsing <a href="#request" title="module">request</a> body to its form variable.</div>
+    <h4 class="property">auto_json <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.auto_json"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Automatic parsing JSON from <a href="#request" title="module">request</a> body.<br><br>
+
+If it is True (default), method is POST, PUT or PATCH and <a href="#request" title="module">request</a>
+content type is one of json_content_types, <a href="#Request" title="class">Request</a> object do
+automatic parsing <a href="#request" title="module">request</a> body to json variable.</div>
+    <h4 class="property">debug <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.debug"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><a href="#Application" title="class">Application</a> debug as another way how to set poor_Debug.<br><br>
+
+This setting will be rewrite by poor_Debug environment variable.</div>
+    <h4 class="property">dhandlers <small>(READ)</small>
+      <span class="links">
+        <a name="Application.dhandlers"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Copy of table with default handlers.<br><br>
+
+See <a href="#Application.set_default" title="(self, fn, method=3)">Application.set_default</a></div>
+    <h4 class="property">document_index <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.document_index"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><a href="#Application" title="class">Application</a> document_root as another way how to set poor_DocumentRoot.<br><br>
+
+This setting will be rewrite by poor_DocumentRoot environ variable.</div>
+    <h4 class="property">document_root <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.document_root"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><a href="#Application" title="class">Application</a> document_root as another way how to set poor_DocumentRoot.<br><br>
+
+This setting will be rewrite by poor_DocumentRoot environ variable.</div>
+    <h4 class="property">filters <small>(READ)</small>
+      <span class="links">
+        <a name="Application.filters"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Copy of filter table.<br><br>
+
+Filter table contains regular expressions and convert functions,
+see <a href="#Application.set_filter" title="(self, name, regex, convertor=poorwsgi.results.uni)">Application.set_filter</a> and <a href="#Application.route" title="(self, uri, method=3)">Application.route</a>.<br><br>
+
+Default filters are:<br>
+<code class="param">:int </code>- match number and convert it to int<br>
+<code class="param">:float </code>- match number and convert it to float<br>
+<code class="param">:word </code>- match one unicoee word<br>
+<code class="param">:hex </code>- match hexadecimal value and convert it to str<br>
+<code class="param">:re: </code>- match user defined regular expression<br>
+<code class="param">none </code>- match any string withount '/' character<br><br>
+
+For more details see <code>/debug-info</code> page of your <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a>, where
+you see all filters with regular expression definition.</div>
+    <h4 class="property">form_content_types <small>(READ)</small>
+      <span class="links">
+        <a name="Application.form_content_types"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Copy of form content type list.<br><br>
+
+Containt list of strings as form content types, which is use for
+testing, when automatics Form object is create from <a href="#request" title="module">request</a> body.</div>
+    <h4 class="property">handlers <small>(READ)</small>
+      <span class="links">
+        <a name="Application.handlers"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Copy of table with static handlers.<br><br>
+
+See <a href="#Application.route" title="(self, uri, method=3)">Application.route</a>.</div>
+    <h4 class="property">json_content_types <small>(READ)</small>
+      <span class="links">
+        <a name="Application.json_content_types"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Copy of json content type list.<br><br>
+
+Containt list of strings as json content types, which is use for
+testing, when automatics <a href="#Json" title="class">Json</a> object is create from <a href="#request" title="module">request</a> body.</div>
+    <h4 class="property">keep_blank_values <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.keep_blank_values"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Keep blank values in <a href="#request" title="module">request</a> arguments.<br><br>
+
+If it is 1 (0 is default), automatic parsing <a href="#request" title="module">request</a> uri or body
+keep blank values as empty string.</div>
+    <h4 class="property">name <small>(READ)</small>
+      <span class="links">
+        <a name="Application.name"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Return <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> name.</div>
+    <h4 class="property">post <small>(READ)</small>
+      <span class="links">
+        <a name="Application.post"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Tuple of table with post-process handlers.<br><br>
+
+See <a href="#Application.post_process" title="(self)">Application.post_process</a>.</div>
+    <h4 class="property">pre <small>(READ)</small>
+      <span class="links">
+        <a name="Application.pre"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Tuple of table with pre-process handlers.<br><br>
+
+See <a href="#Application.pre_process" title="(self)">Application.pre_process</a>.</div>
+    <h4 class="property">rhandlers <small>(READ)</small>
+      <span class="links">
+        <a name="Application.rhandlers"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Copy of table with regular expression handlers.<br><br>
+
+See <a href="#Application.route" title="(self, uri, method=3)">Application.route</a> and <a href="#Application.rroute" title="(self, ruri, method=3)">Application.rroute</a>.</div>
+    <h4 class="property">secret_key <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.secret_key"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><a href="#Application" title="class">Application</a> secret_key could be replace by poor_SecretKey in <a href="#request" title="module">request</a>.<br><br>
+
+Secret key is used by <a href="#PoorSession" title="class">PoorSession</a> class. It is generate from
+some server variables, and the best way is set to your own long
+key.</div>
+    <h4 class="property">shandlers <small>(READ)</small>
+      <span class="links">
+        <a name="Application.shandlers"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Copy of table with http <a href="#state" title="module">state</a> aka error handlers.<br><br>
+
+See <a href="#Application.http_state" title="(self, code, method=7)">Application.http_state</a></div>
+    <h4 class="property">strict_parsing <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Application.strict_parsing"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Strict parse <a href="#request" title="module">request</a> arguments.<br><br>
+
+If it is 1 (0 is default), automatic parsing <a href="#request" title="module">request</a> uri or body
+raise with exception on parsing error.</div>
+    <h4 class="method"><i>def</i> __call__(self, environ, start_response)
+      <span class="links">
+        <a name="Application.__call__" href="#Application.__call__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Callable define for <a href="#Application" title="class">Application</a> instance.<br><br>
+
+This method run __request__ method.</div>
+    <h4 class="method"><i>def</i> __init__(self, name=&#39;__main__&#39;)
+      <span class="links">
+        <a name="Application.__init__" href="#Application.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"><a href="#Application" title="class">Application</a> class is per name singleton.<br><br>
+
+That means, there could be exist only one instance with same name.</div>
+    <h4 class="method"><i>def</i> __profile_request__(self, environ, start_response)
+      <span class="links">
+        <a name="Application.__profile_request__" href="#Application.__profile_request__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Profiler version of __request__.<br><br>
+
+This method is used if set_profile is used.</div>
+    <h4 class="method"><i>def</i> __repr__(self)
+      <span class="links">
+        <a name="Application.__repr__" href="#Application.__repr__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return repr(self).</div>
+    <h4 class="method"><i>def</i> __request__(self, environ, start_response)
+      <span class="links">
+        <a name="Application.__request__" href="#Application.__request__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Create <a href="#Request" title="class">Request</a> instance and return <a href="#wsgi" title="module">wsgi</a> response.<br><br>
+
+This method create <a href="#Request" title="class">Request</a> object, call handlers from
+<a href="#Application" title="class">Application</a>.__pre (<a href="#Application.handler_from_pre" title="(self, req)">Application.handler_from_pre</a>),
+uri handler (handler_from_table), default handler
+(<a href="#Application.handler_from_default" title="(self, req)">Application.handler_from_default</a>) or error handler
+(<a href="#Application.error_from_table" title="(self, req, code)">Application.error_from_table</a>), and handlers from
+<a href="#Application" title="class">Application</a>.__post.</div>
+    <h4 class="method"><i>def</i> add_post_process(self, fn)
+      <span class="links">
+        <a name="Application.add_post_process" href="#Application.add_post_process">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Append post process handler.<br><br>
+
+Method for direct append function to list functions which are called
+after each <a href="#request" title="module">request</a>.
+<pre class="python">    <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.add_post_process(after_each_request)</pre></div>
+    <h4 class="method"><i>def</i> add_pre_process(self, fn)
+      <span class="links">
+        <a name="Application.add_pre_process" href="#Application.add_pre_process">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Append pre proccess handler.<br><br>
+
+Method adds function to list functions which is call before each
+<a href="#request" title="module">request</a>.
+<pre class="python">    <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.add_pre_process(before_each_request)</pre></div>
+    <h4 class="method"><i>def</i> default(self, method=3)
+      <span class="links">
+        <a name="Application.default" href="#Application.default">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Set default handler.<br><br>
+
+This is decorator for default handler for http method (called before
+error_not_found).
+<pre class="python"><var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.default</var>(<a href="#METHOD_GET_POST" title="7">METHOD_GET_POST</a>)
+    <b>def</b> <em>default_get_post</em>(req):
+        <i># this function will be called if no uri match in internal</i>
+        <i># uri table with method. It's similar like <a href="#not_found" title="(req)">not_found</a> error,</i>
+        <i># but without error</i>
+        ...</pre></div>
+    <h4 class="method"><i>def</i> del_profile(self)
+      <span class="links">
+        <a name="Application.del_profile" href="#Application.del_profile">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Remove profiler from <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a>.</div>
+    <h4 class="method"><i>def</i> error_from_table(self, req, code)
+      <span class="links">
+        <a name="Application.error_from_table" href="#Application.error_from_table">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal method, which is called if error was accured.<br><br>
+
+If status code is in <a href="#Application.shandlers" title="(True, False, False)">Application.shandlers</a> (fill with http_state
+function), call this handler.</div>
+    <h4 class="method"><i>def</i> get_options(self)
+      <span class="links">
+        <a name="Application.get_options" href="#Application.get_options">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns dictionary with <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> variables from system environment.<br><br>
+
+<a href="#Application" title="class">Application</a> variables start with <code>app_</code> prefix,
+but in returned dictionary is set without this prefix.
+<pre class="ini">
+<u>    poor_LogLevel</u> = warn        <i># Poor WSGI variable</i>
+<u>    app_db_server</u> = localhost   <i># <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> variable db_server</i>
+<u>    app_templates</u> = <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>/templ   <i># <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> variable templates</i></pre>
+This method works like <a href="#Request.get_options" title="(self)">Request.get_options</a>, but work with
+os.environ, so it works only with <a href="#wsgi" title="module">wsgi</a> servers, which set not only
+<a href="#request" title="module">request</a> environ, but os.environ too. Apaches mod_wsgi don't do that,
+uWsgi and PoorHTTP do that.</div>
+    <h4 class="method"><i>def</i> handler_from_default(self, req)
+      <span class="links">
+        <a name="Application.handler_from_default" href="#Application.handler_from_default">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal method, which is called if no handler is found.</div>
+    <h4 class="method"><i>def</i> handler_from_pre(self, req)
+      <span class="links">
+        <a name="Application.handler_from_pre" href="#Application.handler_from_pre">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal method, which run all pre (pre_proccess) handlers.<br><br>
+
+This method was call before end-point route handler.</div>
+    <h4 class="method"><i>def</i> handler_from_table(self, req)
+      <span class="links">
+        <a name="Application.handler_from_table" href="#Application.handler_from_table">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Call right handler from handlers table (fill with route function).<br><br>
+
+If no handler is fined, try to find directory or file if Document Root,
+resp. Document Index is set. Then try to call default handler for right
+method or call handler for status code 404 - not found.</div>
+    <h4 class="method"><i>def</i> http_state(self, code, method=7)
+      <span class="links">
+        <a name="Application.http_state" href="#Application.http_state">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Wrap function to handle http status codes like http errors.</div>
+    <h4 class="method"><i>def</i> is_route(self, uri)
+      <span class="links">
+        <a name="Application.is_route" href="#Application.is_route">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Check if uri have any registered record.</div>
+    <h4 class="method"><i>def</i> is_rroute(self, r_uri)
+      <span class="links">
+        <a name="Application.is_rroute" href="#Application.is_rroute">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Check if regular expression uri have any registered record.</div>
+    <h4 class="method"><i>def</i> log_debug(self, message)
+      <span class="links">
+        <a name="Application.log_debug" href="#Application.log_debug">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Logging method, which create message as <a href="#LOG_DEBUG" title="(7, 'D')">LOG_DEBUG</a> level.</div>
+    <h4 class="method"><i>def</i> log_error(self, message, level=(3, &#39;E&#39;))
+      <span class="links">
+        <a name="Application.log_error" href="#Application.log_error">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Logging method with the same functionality like in <a href="#Request" title="class">Request</a> object.<br><br>
+
+But as get_options read configuration from os.environ which could
+not work in same <a href="#wsgi" title="module">wsgi</a> servers like Apaches mod_wsgi.<br><br>
+
+This method write to stderr so messages, could not be found in
+servers error log!</div>
+    <h4 class="method"><i>def</i> log_info(self, message)
+      <span class="links">
+        <a name="Application.log_info" href="#Application.log_info">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Logging method, which create message as <a href="#LOG_INFO" title="(6, 'I')">LOG_INFO</a> level.</div>
+    <h4 class="method"><i>def</i> log_warning(self, message)
+      <span class="links">
+        <a name="Application.log_warning" href="#Application.log_warning">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Logging method, which create message as <a href="#LOG_WARNING" title="(4, 'W')">LOG_WARNING</a> level.</div>
+    <h4 class="method"><i>def</i> pop_default(self, method)
+      <span class="links">
+        <a name="Application.pop_default" href="#Application.pop_default">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Pop default handler for method.</div>
+    <h4 class="method"><i>def</i> pop_http_state(self, code, method)
+      <span class="links">
+        <a name="Application.pop_http_state" href="#Application.pop_http_state">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Pop handerl for http <a href="#state" title="module">state</a> and method.<br><br>
+
+As <a href="#Application.pop_route" title="(self, uri, method)">Application.pop_route</a>, for pop multimethod handler, you must call
+pop_http_state for each method.</div>
+    <h4 class="method"><i>def</i> pop_route(self, uri, method)
+      <span class="links">
+        <a name="Application.pop_route" href="#Application.pop_route">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Pop handler for uri and method from handers table.<br><br>
+
+Method must be define unique, so <a href="#METHOD_GET_POST" title="7">METHOD_GET_POST</a> could not be use.
+If you want to remove handler for both <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>, you must call pop route
+for each method <a href="#state" title="module">state</a>.</div>
+    <h4 class="method"><i>def</i> pop_rroute(self, r_uri, method)
+      <span class="links">
+        <a name="Application.pop_rroute" href="#Application.pop_rroute">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Pop handler and convertors for uri and method from handlers table.<br><br>
+
+For mor details see <a href="#Application.pop_route" title="(self, uri, method)">Application.pop_route</a>.</div>
+    <h4 class="method"><i>def</i> post_process(self)
+      <span class="links">
+        <a name="Application.post_process" href="#Application.post_process">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Append post process handler.<br><br>
+
+This decorator append function to be called after each <a href="#request" title="module">request</a>,
+if you want to use it redefined all outputs.
+<pre class="python"><var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.pre_process</var>()
+    <b>def</b> <em>after_each_request</em>(req):
+        ...</pre></div>
+    <h4 class="method"><i>def</i> pre_process(self)
+      <span class="links">
+        <a name="Application.pre_process" href="#Application.pre_process">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Append pre process hendler.<br><br>
+
+This is decorator for function to call before each <a href="#request" title="module">request</a>.
+<pre class="python"><var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.pre_process</var>()
+    <b>def</b> <em>before_each_request</em>(req):
+        ...</pre></div>
+    <h4 class="method"><i>def</i> route(self, uri, method=3)
+      <span class="links">
+        <a name="Application.route" href="#Application.route">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Wrap function to be handler for uri and specified method.<br><br>
+
+You can define uri as static path or as groups which are hand
+to handler as next parameters.
+<pre class="python">    <i># static uri</i>
+<var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.route</var>(<i>'/user/post'</i>, method=<a href="#METHOD_POST" title="4">METHOD_POST</a>)
+    <b>def</b> <em>user_create</em>(req):
+        ...
+
+    <i># group regular expression</i>
+<var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.route</var>(<i>'/user/&lt;name&gt;'</i>)
+    <b>def</b> <em>user_detail</em>(req, name):
+        ...
+
+    <i># group regular expression with filter</i>
+<var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.route</var>(<i>'/&lt;surname:word&gt;/&lt;age:int&gt;'</i>)
+    <b>def</b> <em>surnames_by_age</em>(req, surname, age):
+        ...
+
+    <i># group with own regular expression filter</i>
+<var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.route</var>(<i>'/&lt;car:re:\w+&gt;/&lt;color:re:#[\da-fA-F]+&gt;'</i>)
+    <b>def</b> <em>car</em>(req, car, color):
+        ...</pre>
+If you can use some name of group which is python keyword, like class,
+you can use **kwargs syntax:
+<pre class="python"><var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.route</var>(<i>'/&lt;class&gt;/&lt;len:int&gt;'</i>)
+    <b>def</b> <em>classes</em>(req, **kwargs):
+        <b>return</b> <i>"'%s' class is %d lenght."</i> %                     (kwargs[<i>'class'</i>], kwargs[<i>'len'</i>])</pre>
+Be sure with ordering of call this decorator or set_route function with
+groups regular expression. Regular expression routes are check with the
+same ordering, as you create internal table of them. First match stops
+any other searching. In fact, if groups are detect, they will be
+transfer to normal regular expression, and will be add to second
+internal table.</div>
+    <h4 class="method"><i>def</i> rroute(self, ruri, method=3)
+      <span class="links">
+        <a name="Application.rroute" href="#Application.rroute">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Wrap function to be handler for uri defined by regular expression.<br><br>
+
+Both of function, rroute and set_rroute store routes to special
+internal table, which is another to table of static routes.
+<pre class="python"><var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.rroute</var>(r<i>'/user/\w+'</i>)               <i># simple regular expression</i>
+    <b>def</b> <em>any_user</em>(req):
+        ...
+<var>
+    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.rroute</var>(r<i>'/user/(?P&lt;user&gt;\w+)'</i>)     <i># regular expression with</i>
+    <b>def</b> <em>user_detail</em>(req, user):             <i># groups</i>
+        ...</pre>
+Be sure with ordering of call this decorator or set_rroute function.
+Regular expression routes are check with the same ordering, as you
+create internal table of them. First match stops any other searching.</div>
+    <h4 class="method"><i>def</i> set_default(self, fn, method=3)
+      <span class="links">
+        <a name="Application.set_default" href="#Application.set_default">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Set default handler.<br><br>
+
+Set fn default handler for http method called befor error_not_found.
+<pre class="python">    <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.set_default(default_get_post, <a href="#METHOD_GET_POST" title="7">METHOD_GET_POST</a>)</pre></div>
+    <h4 class="method"><i>def</i> set_filter(self, name, regex, convertor=poorwsgi.results.uni)
+      <span class="links">
+        <a name="Application.set_filter" href="#Application.set_filter">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Create new filter or overwrite builtins.<br><br>
+
+Arguments:<br>
+<code class="param">name      </code>- Name of filter which is used in route or set_route<br>
+<code class="param">            </code>method.<br>
+<code class="param">regex     </code>- regular expression which used for filter<br>
+<code class="param">convertor </code>- convertor function or class, which gets unicode in<br>
+<code class="param">            </code>input. Default is <a href="#uni" title="(text)">uni</a> function, which is wrapper<br>
+<code class="param">            </code>to unicode string.
+<pre class="python">    <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.set_filter(<i>'uint'</i>, r<i>'\d+'</i>, <kbd>int</kbd>)</pre></div>
+    <h4 class="method"><i>def</i> set_http_state(self, code, fn, method=7)
+      <span class="links">
+        <a name="Application.set_http_state" href="#Application.set_http_state">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Set fn as handler for http <a href="#state" title="module">state</a> code and method.</div>
+    <h4 class="method"><i>def</i> set_profile(self, runctx, dump)
+      <span class="links">
+        <a name="Application.set_profile" href="#Application.set_profile">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Set profiler for __call__ function.<br><br>
+
+Arguments:<br>
+<code class="param">runctx </code>- function from profiler module<br>
+<code class="param">dump </code>- path and prefix for .profile files<br><br>
+
+Typical usage:
+<pre class="python">    <b>import</b> cProfile
+
+    cProfile.runctx(<i>'from simple import *'</i>, <kbd>globals</kbd>(), <kbd>locals</kbd>(),
+                    filename=<i>"log/init.profile"</i>)
+    <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.set_profile(cProfile.runctx, <i>'log/req'</i>)</pre></div>
+    <h4 class="method"><i>def</i> set_route(self, uri, fn, method=3)
+      <span class="links">
+        <a name="Application.set_route" href="#Application.set_route">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Set handler for uri and method.<br><br>
+
+Another way to add fn as handler for uri. See <a href="#Application.route" title="(self, uri, method=3)">Application.route</a>
+documentation for details.
+<pre class="python">    <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.set_route(<i>'/use/post'</i>, user_create, <a href="#METHOD_POST" title="4">METHOD_POST</a>)</pre></div>
+    <h4 class="method"><i>def</i> set_rroute(self, r_uri, fn, method=3, convertors=())
+      <span class="links">
+        <a name="Application.set_rroute" href="#Application.set_rroute">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Set hanlder for uri defined by regular expression.<br><br>
+
+Another way to add fn as handler for uri defined by regular expression.
+See <a href="#Application.rroute" title="(self, ruri, method=3)">Application.rroute</a> documentation for details.
+<pre class="python">    <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.set_rroute(<i>'/use/\w+/post'</i>, user_create, <a href="#METHOD_POST" title="4">METHOD_POST</a>)</pre>
+This method is internally use, when groups are found in static route,
+adding by route or set_route method.</div>
+    <h4 class="variable">re_filter = (&lt;(\w+)(:[^&gt;]+)?&gt;, 32)
+      <span class="links">
+        <a name="re_filter"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable">check, if there is define filter in uri</div>
+    <h2 class="module"><i>module</i> request
+      <span class="links">
+        <a name="request" href="#request">link</a> |
+        <a href="#">top</a></span></h2>
+    <div class="module"><a href="#Headers" title="class">Headers</a>, <a href="#Request" title="class">Request</a> and <a href="#FieldStorage" title="class">FieldStorage</a> classes, which is used for managing requests.</div>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">_io</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">cgi</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">collections.abc</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">http.cookies</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">inspect</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">json</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule">os</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence"><a href="#poorwsgi" title="module">poorwsgi</a>.<a href="#results" title="module">results</a></span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule">re</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">urllib.parse</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">wsgiref.headers</span>
+    <h3 class="class"><i>class</i> Args
+      <span class="links">
+        <a name="Args" href="#Args">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Compatibility class for read values from QUERY_STRING.<br><br>
+
+Class is based on dictionary. It has getfirst and getlist <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>,
+which can call function on values.</div>
+    <h4 class="method"><i>def</i> __init__(self, req, keep_blank_values=0, strict_parsing=0)
+      <span class="links">
+        <a name="Args.__init__" href="#Args.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Initialize self.  See help(type(self)) for accurate signature.</div>
+    <h4 class="method"><i>def</i> getfirst(self, name, default=None, fce=poorwsgi.results.uni)
+      <span class="links">
+        <a name="Args.getfirst" href="#Args.getfirst">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns first variable value for key or default.<br><br>
+
+Arguments:<br>
+<code class="param">fce </code>- function which processed value.</div>
+    <h4 class="method"><i>def</i> getlist(self, name, fce=poorwsgi.results.uni)
+      <span class="links">
+        <a name="Args.getlist" href="#Args.getlist">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns list of variable values for key or empty list.<br><br>
+
+Arguments:<br>
+<code class="param">fce </code>- function which processed value.</div>
+    <h3 class="class"><i>class</i> BrokenClientConnection
+      <span class="links">
+        <a name="BrokenClientConnection" href="#BrokenClientConnection">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Helping class for Broken Connection Pipe detect.</div>
+    <h4 class="method"><i>def</i> __init__(self, remote_host, remote_addr)
+      <span class="links">
+        <a name="BrokenClientConnection.__init__" href="#BrokenClientConnection.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Initialize self.  See help(type(self)) for accurate signature.</div>
+    <h4 class="method"><i>def</i> __str__(self)
+      <span class="links">
+        <a name="BrokenClientConnection.__str__" href="#BrokenClientConnection.__str__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return str(self).</div>
+    <h3 class="class"><i>class</i> EmptyForm
+      <span class="links">
+        <a name="EmptyForm" href="#EmptyForm">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Compatibility class as fallback.<br><br>
+
+This class is used when poor_AutoArgs or poor_AutoForm is set to Off.</div>
+    <h4 class="method"><i>def</i> getfirst(self, name, default=None, fce=poorwsgi.results.uni)
+      <span class="links">
+        <a name="EmptyForm.getfirst" href="#EmptyForm.getfirst">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> getlist(self, name, fce=poorwsgi.results.uni)
+      <span class="links">
+        <a name="EmptyForm.getlist" href="#EmptyForm.getlist">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> getvalue(self, name, default=None)
+      <span class="links">
+        <a name="EmptyForm.getvalue" href="#EmptyForm.getvalue">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h3 class="class"><i>class</i> FieldStorage
+      <span class="links">
+        <a name="FieldStorage" href="#FieldStorage">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Class based of cgi.<a href="#FieldStorage" title="class">FieldStorage</a>.<br><br>
+
+Instead of <a href="#FieldStorage" title="class">FieldStorage</a> from cgi module, can have better getfirst
+and getlist <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> which can call function on values and can set
+file_callback.<br><br>
+
+Constructor post special environment to base class, which do POST emulation
+for any <a href="#request" title="module">request</a>, because base cgi.<a href="#FieldStorage" title="class">FieldStorage</a> know only GET, HEAD and POST
+<a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> an read from all variables, which we don't want.<br><br>
+
+There are some usable variables, which you can use, if you want to test
+what variable it is:<br>
+<code class="param">name </code>- variable name, the same name from input attribute.<br>
+<code class="param">type </code>- content-type of variable. All variables have internal<br>
+<code class="param">      </code>content-type, if that is no file, content-type is text/plain.<br>
+<code class="param">filename </code>- if variable is file, filename is its name from form.<br>
+<code class="param">file </code>- file type instance, from you can read variable. This instance<br>
+<code class="param">      </code>could be TemporaryFile as default for files, StringIO for normal<br>
+<code class="param">      </code>variables or instance of your own file type class, create from<br>
+<code class="param">      </code>file_callback.<br>
+<code class="param">lists </code>- if variable is list of variables, this contains instances of<br>
+<code class="param">      </code><a href="#FieldStorage" title="class">FieldStorage</a>.</div>
+    <h4 class="method"><i>def</i> __bool__(self)
+      <span class="links">
+        <a name="FieldStorage.__bool__" href="#FieldStorage.__bool__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __contains__(self, key)
+      <span class="links">
+        <a name="FieldStorage.__contains__" href="#FieldStorage.__contains__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Dictionary style __contains__ method.</div>
+    <h4 class="method"><i>def</i> __del__(self)
+      <span class="links">
+        <a name="FieldStorage.__del__" href="#FieldStorage.__del__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __enter__(self)
+      <span class="links">
+        <a name="FieldStorage.__enter__" href="#FieldStorage.__enter__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __exit__(self, *args)
+      <span class="links">
+        <a name="FieldStorage.__exit__" href="#FieldStorage.__exit__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __getattr__(self, name)
+      <span class="links">
+        <a name="FieldStorage.__getattr__" href="#FieldStorage.__getattr__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __getitem__(self, key)
+      <span class="links">
+        <a name="FieldStorage.__getitem__" href="#FieldStorage.__getitem__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Dictionary style indexing.</div>
+    <h4 class="method"><i>def</i> __init__(self, req, headers=None, outerboundary=b&#39;&#39;, environ={}, keep_blank_values=0, strict_parsing=0, limit=None, encoding=&#39;utf-8&#39;, errors=&#39;replace&#39;, file_callback=None)
+      <span class="links">
+        <a name="FieldStorage.__init__" href="#FieldStorage.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Constructor of <a href="#FieldStorage" title="class">FieldStorage</a>.<br><br>
+
+Many of input parameters are need only for next internal use, because<br>
+<code class="param"><a href="#FieldStorage" title="class">FieldStorage</a> </code>parse variables recursive. You need add only:<br>
+<code class="param">    </code>req             - <a href="#Request" title="class">Request</a> object.<br>
+<code class="param">    </code>keep_blank_values - if you want to parse blank values as right<br>
+<code class="param">                     </code>empty values.<br>
+<code class="param">    </code>strict_parsing  - if you want to raise exception on parsing<br>
+<code class="param">                     </code>error.<br>
+<code class="param">    </code>file_callback   - callback for creating instance of uploading<br>
+<code class="param">                     </code>files.</div>
+    <h4 class="method"><i>def</i> __iter__(self)
+      <span class="links">
+        <a name="FieldStorage.__iter__" href="#FieldStorage.__iter__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __len__(self)
+      <span class="links">
+        <a name="FieldStorage.__len__" href="#FieldStorage.__len__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Dictionary style len(x) support.</div>
+    <h4 class="method"><i>def</i> __repr__(self)
+      <span class="links">
+        <a name="FieldStorage.__repr__" href="#FieldStorage.__repr__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return a printable representation.</div>
+    <h4 class="method"><i>def</i> get(self, key, default=None)
+      <span class="links">
+        <a name="FieldStorage.get" href="#FieldStorage.get">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Compatibility <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> with dict, alias for getvalue.</div>
+    <h4 class="method"><i>def</i> getfirst(self, name, default=None, fce=poorwsgi.results.uni)
+      <span class="links">
+        <a name="FieldStorage.getfirst" href="#FieldStorage.getfirst">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns first variable value for key or default, if key not exist.<br><br>
+
+Arguments:<br>
+<code class="param">fce </code>- function which processed value.</div>
+    <h4 class="method"><i>def</i> getlist(self, name, fce=poorwsgi.results.uni)
+      <span class="links">
+        <a name="FieldStorage.getlist" href="#FieldStorage.getlist">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns list of variable values for key or empty list.<br><br>
+
+Arguments:<br>
+<code class="param">fce </code>- function which processed value, str is default.</div>
+    <h4 class="method"><i>def</i> getvalue(self, key, default=None)
+      <span class="links">
+        <a name="FieldStorage.getvalue" href="#FieldStorage.getvalue">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Dictionary style get() method, including 'value' lookup.</div>
+    <h4 class="method"><i>def</i> keys(self)
+      <span class="links">
+        <a name="FieldStorage.keys" href="#FieldStorage.keys">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Dictionary style keys() method.</div>
+    <h4 class="method"><i>def</i> make_file(self, binary=None)
+      <span class="links">
+        <a name="FieldStorage.make_file" href="#FieldStorage.make_file">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return readable and writable temporary file.<br><br>
+
+Arguments:<br>
+<code class="param">binary </code>- unused. Here is only for backward compatibility</div>
+    <h4 class="method"><i>def</i> read_binary(self)
+      <span class="links">
+        <a name="FieldStorage.read_binary" href="#FieldStorage.read_binary">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal: read binary data.</div>
+    <h4 class="method"><i>def</i> read_lines(self)
+      <span class="links">
+        <a name="FieldStorage.read_lines" href="#FieldStorage.read_lines">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal: read lines until EOF or outerboundary.</div>
+    <h4 class="method"><i>def</i> read_lines_to_eof(self)
+      <span class="links">
+        <a name="FieldStorage.read_lines_to_eof" href="#FieldStorage.read_lines_to_eof">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal: read lines until EOF.</div>
+    <h4 class="method"><i>def</i> read_lines_to_outerboundary(self)
+      <span class="links">
+        <a name="FieldStorage.read_lines_to_outerboundary" href="#FieldStorage.read_lines_to_outerboundary">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal: read lines until outerboundary.
+Data is read as bytes: boundaries and line ends must be converted
+to bytes for comparisons.</div>
+    <h4 class="method"><i>def</i> read_multi(self, environ, keep_blank_values, strict_parsing)
+      <span class="links">
+        <a name="FieldStorage.read_multi" href="#FieldStorage.read_multi">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal: read a part that is itself multipart.</div>
+    <h4 class="method"><i>def</i> read_single(self)
+      <span class="links">
+        <a name="FieldStorage.read_single" href="#FieldStorage.read_single">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal: read an atomic part.</div>
+    <h4 class="method"><i>def</i> read_urlencoded(self)
+      <span class="links">
+        <a name="FieldStorage.read_urlencoded" href="#FieldStorage.read_urlencoded">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal: read data in query string format.</div>
+    <h4 class="method"><i>def</i> skip_lines(self)
+      <span class="links">
+        <a name="FieldStorage.skip_lines" href="#FieldStorage.skip_lines">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Internal: skip lines until outer boundary if defined.</div>
+    <h3 class="class"><i>class</i> Headers
+      <span class="links">
+        <a name="Headers" href="#Headers">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Class inherited from collections.Mapping.<br><br>
+
+As <a href="http://www.python.org/dev/peps/pep-0333/">PEP 333</a>, resp. <a href="http://www.faqs.org/rfcs/rfc2616/">RFC 2616</a> says, all headers names must be only US-ASCII
+character except control characters or separators. And headers values must
+be store in string encoded in ISO-8859-1. This class <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> <a href="#Headers.add" title="(self, name, value)">Headers.add</a>
+and <a href="#Headers.add_header" title="(self, name, value, **kwargs)">Headers.add_header</a> do auto convert values from UTF-8 to ISO-8859-1
+encoding if it is possible. So on every modification <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> must be use
+UTF-8 string or unicode.</div>
+    <h4 class="method"><i>def</i> __contains__(self, key)
+      <span class="links">
+        <a name="Headers.__contains__" href="#Headers.__contains__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __delitem__(self, name)
+      <span class="links">
+        <a name="Headers.__delitem__" href="#Headers.__delitem__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Delete item identied by lower name.</div>
+    <h4 class="method"><i>def</i> __eq__(self, other)
+      <span class="links">
+        <a name="Headers.__eq__" href="#Headers.__eq__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return self==value.</div>
+    <h4 class="method"><i>def</i> __getitem__(self, name)
+      <span class="links">
+        <a name="Headers.__getitem__" href="#Headers.__getitem__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return header item identified by lower name.</div>
+    <h4 class="method"><i>def</i> __init__(self, headers=[], strict=True)
+      <span class="links">
+        <a name="Headers.__init__" href="#Headers.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"><a href="#Headers" title="class">Headers</a> constructor.<br><br>
+
+<a href="#Headers" title="class">Headers</a> object could be create from list, set or tuple of pairs
+name, value. Or from dictionary. All names or values must be
+iso-8859-1 encodable. If not, AssertionError will be raised.<br><br>
+
+If strict is False, headers names and values are not encoded to
+iso-8859-1. This is for input headers using only!</div>
+    <h4 class="method"><i>def</i> __iter__(self)
+      <span class="links">
+        <a name="Headers.__iter__" href="#Headers.__iter__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __len__(self)
+      <span class="links">
+        <a name="Headers.__len__" href="#Headers.__len__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return len of header items.</div>
+    <h4 class="method"><i>def</i> __repr__(self)
+      <span class="links">
+        <a name="Headers.__repr__" href="#Headers.__repr__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return repr(self).</div>
+    <h4 class="method"><i>def</i> __setitem__(self, name, value)
+      <span class="links">
+        <a name="Headers.__setitem__" href="#Headers.__setitem__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Delete item if exist and set it's new value.</div>
+    <h4 class="method"><i>def</i> add(self, name, value)
+      <span class="links">
+        <a name="Headers.add" href="#Headers.add">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Set header name to value.<br><br>
+
+Duplicate names are not allowed instead of <code>Set-Cookie</code>.</div>
+    <h4 class="method"><i>def</i> add_header(self, name, value, **kwargs)
+      <span class="links">
+        <a name="Headers.add_header" href="#Headers.add_header">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Extended header setting.<br><br>
+
+name is the header field to add. kwargs arguments can be used to set
+additional parameters for the header field, with underscores converted
+to dashes.  Normally the parameter will be added as name="value" unless
+value is None, in which case only the name will be added.
+<pre class="python">    h.add_header(<i>'Content-Disposition'</i>, <i>'attachment'</i>,
+                 filename=<i>'image.png'</i>)</pre>
+All names must be US-ASCII string except control characters
+or separators.</div>
+    <h4 class="method"><i>def</i> get(self, key, default=None)
+      <span class="links">
+        <a name="Headers.get" href="#Headers.get">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">D.get(k[,d]) -&gt; D[k] if k in D, else d.  d defaults to None.</div>
+    <h4 class="method"><i>def</i> get_all(self, name)
+      <span class="links">
+        <a name="Headers.get_all" href="#Headers.get_all">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return tuple of all values of header identifed by lower name.</div>
+    <h4 class="method"><i>def</i> iso88591(value)
+      <span class="links">
+        <a name="Headers.iso88591" href="#Headers.iso88591">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Doing automatic conversion to iso-8859-1 strings.<br><br>
+
+In python 2.x can convert unicode to iso-8859-1 strings, or from utf-8
+string to iso-8859-1 string. On python 3.x converts from utf-8 to
+iso-8859-1 string. That means, all input value of <a href="#Headers" title="class">Headers</a> class
+must be UTF-8 stings.</div>
+    <h4 class="method"><i>def</i> items(self)
+      <span class="links">
+        <a name="Headers.items" href="#Headers.items">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return tuple of headers pairs.</div>
+    <h4 class="method"><i>def</i> keys(self)
+      <span class="links">
+        <a name="Headers.keys" href="#Headers.keys">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Alias for names method.</div>
+    <h4 class="method"><i>def</i> names(self)
+      <span class="links">
+        <a name="Headers.names" href="#Headers.names">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return tuple of headers names.</div>
+    <h4 class="method"><i>def</i> setdefault(self, name, value)
+      <span class="links">
+        <a name="Headers.setdefault" href="#Headers.setdefault">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Set header value if not exist, and return it's value.</div>
+    <h4 class="method"><i>def</i> values(self)
+      <span class="links">
+        <a name="Headers.values" href="#Headers.values">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Return tuple of headers values.</div>
+    <h3 class="class"><i>class</i> Json
+      <span class="links">
+        <a name="Json" href="#Json">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Compatibility class for read values from JSON POST, PUT or PATCH <a href="#request" title="module">request</a>.<br><br>
+
+It has getfirst and getlist <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>, which can call function on values.</div>
+    <h4 class="method"><i>def</i> __init__(self, req, charset)
+      <span class="links">
+        <a name="Json.__init__" href="#Json.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Initialize self.  See help(type(self)) for accurate signature.</div>
+    <h4 class="method"><i>def</i> getfirst(self, name, default=None, fce=poorwsgi.results.uni)
+      <span class="links">
+        <a name="Json.getfirst" href="#Json.getfirst">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns first variable value for key or default, if key not exist.<br><br>
+
+Arguments:<br>
+<code class="param">fce </code>- function which processed value.</div>
+    <h4 class="method"><i>def</i> getlist(self, name, fce=poorwsgi.results.uni)
+      <span class="links">
+        <a name="Json.getlist" href="#Json.getlist">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns list of variable values for key or empty list.<br><br>
+
+Arguments:<br>
+<code class="param">fce </code>- function which processed value.</div>
+    <h3 class="class"><i>class</i> Request
+      <span class="links">
+        <a name="Request" href="#Request">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">HTTP <a href="#request" title="module">request</a> object with all server elements.<br><br>
+
+It could be compatible as soon as possible with mod_python.apache.<a href="#request" title="module">request</a>.<br><br>
+
+Special variables for user use:<br>
+<code class="param">app_            </code>- as prefix for any your <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> variable (not<br>
+<code class="param">                  </code>defined)</div>
+    <h4 class="property">args <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.args"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Extended dictionary (<a href="#Args" title="class">Args</a> instance) of <a href="#request" title="module">request</a> arguments.<br><br>
+
+Argument are parsed from QUERY_STRING, which is typical, but not only
+for GET method. Arguments are parsed when <a href="#Application.auto_args" title="(True, True, False)">Application.auto_args</a> is set
+which is default.<br><br>
+
+This property could be <b>set only once</b>.</div>
+    <h4 class="property">body_bytes_sent <small>(READ)</small>
+      <span class="links">
+        <a name="Request.body_bytes_sent"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Internal variable to store count of bytes which are really sent.</div>
+    <h4 class="property">clength <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.clength"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Property to store output content length for header.<br><br>
+
+This value was set automatically when size of output data are less then
+buffer size.</div>
+    <h4 class="property">config <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.config"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">For config object (default None).</div>
+    <h4 class="property">content_type <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.content_type"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Content-Type header string, by default <code>text/html; charset=utf-8</code>.<br><br>
+
+Another way to set content_type is via headers_out object property.</div>
+    <h4 class="property">cookies <small>(READ)</small>
+      <span class="links">
+        <a name="Request.cookies"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">SimpleCookie iterable object of all cookies from Cookie header.<br><br>
+
+This property was set if <a href="#Application.auto_cookies" title="(True, True, False)">Application.auto_cookies</a> is set to true,
+which is default. Otherwise cookies was empty tuple.</div>
+    <h4 class="property">debug <small>(READ)</small>
+      <span class="links">
+        <a name="Request.debug"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Value of poor_Debug variable.</div>
+    <h4 class="property">document_index <small>(READ)</small>
+      <span class="links">
+        <a name="Request.document_index"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Value of poor_DocumentIndex variable.<br><br>
+
+Variable is used to generate index html page, when poor_DocumentRoot
+is set.</div>
+    <h4 class="property">environ <small>(READ)</small>
+      <span class="links">
+        <a name="Request.environ"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Copy of table object containing <a href="#request" title="module">request</a> environment.<br><br>
+
+Information is get from <a href="#wsgi" title="module">wsgi</a> server.</div>
+    <h4 class="property">err_headers_out <small>(READ)</small>
+      <span class="links">
+        <a name="Request.err_headers_out"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Reference to output headers object for error pages.</div>
+    <h4 class="property">form <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.form"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Dictionary like class (<a href="#FieldStorage" title="class">FieldStorage</a> instance) of body arguments.<br><br>
+
+Arguments must be send in <a href="#request" title="module">request</a> body with content type
+one of <a href="#Application.form_content_types" title="(True, False, False)">Application.form_content_types</a>. Method must be POST, PUT
+or PATCH. <a href="#Request" title="class">Request</a> body is parsed when <a href="#Application.auto_form" title="(True, True, False)">Application.auto_form</a>
+is set, which default and when method is POST, PUT or PATCH.<br><br>
+
+This property could be <b>set only once</b>.</div>
+    <h4 class="property">forwarded_for <small>(READ)</small>
+      <span class="links">
+        <a name="Request.forwarded_for"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">X-Forward-For http header if exists.</div>
+    <h4 class="property">forwarded_host <small>(READ)</small>
+      <span class="links">
+        <a name="Request.forwarded_host"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">X-Forward-Host http header if exists.</div>
+    <h4 class="property">forwarded_proto <small>(READ)</small>
+      <span class="links">
+        <a name="Request.forwarded_proto"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">X-Forward-Proto http header if exists.</div>
+    <h4 class="property">headers_in <small>(READ)</small>
+      <span class="links">
+        <a name="Request.headers_in"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Reference to input headers object.</div>
+    <h4 class="property">headers_out <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.headers_out"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Reference to output headers object.</div>
+    <h4 class="property">hostname <small>(READ)</small>
+      <span class="links">
+        <a name="Request.hostname"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Host, as set by full URI or Host: header.</div>
+    <h4 class="property">is_body_request <small>(READ)</small>
+      <span class="links">
+        <a name="Request.is_body_request"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">True if <a href="#request" title="module">request</a> is body <a href="#request" title="module">request</a> type, so it is PATCH, POST or PUT.<br>
+<code class="param">    </code></div>
+    <h4 class="property">is_xhr <small>(READ)</small>
+      <span class="links">
+        <a name="Request.is_xhr"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">.If X-Requested-With header is set and have XMLHttpRequest value.</div>
+    <h4 class="property">json <small>(READ)</small>
+      <span class="links">
+        <a name="Request.json"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><a href="#Json" title="class">Json</a> dictionary if <a href="#request" title="module">request</a> content type is JSON.<br><br>
+
+<a href="#Json" title="class">Json</a> types is defined in <a href="#Application.json_content_types" title="(True, False, False)">Application.json_content_types</a>, typical is
+<code><a href="#application" title="__poorwsgi__ - callable Application class instance">application</a>/json</code> and <a href="#request" title="module">request</a> method must be POST, PUT or PATCH and
+<a href="#Application.auto_json" title="(True, True, False)">Application.auto_json</a> must be set to true (default). Otherwise json
+is <a href="#EmptyForm" title="class">EmptyForm</a>.</div>
+    <h4 class="property">logger <small>(READ)</small>
+      <span class="links">
+        <a name="Request.logger"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><b>DEPRECATED</b> For special logger function (default req.log_error).<br><br>
+
+Use log_error, log_info, log_debug or logging method instead of that.</div>
+    <h4 class="property">method <small>(READ)</small>
+      <span class="links">
+        <a name="Request.method"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">String containing the method - <code>GET</code>, <code>HEAD</code>, <code>POST</code>, etc.</div>
+    <h4 class="property">method_number <small>(READ)</small>
+      <span class="links">
+        <a name="Request.method_number"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Method number constant from <a href="#state" title="module">state</a> module.</div>
+    <h4 class="property">poor_environ <small>(READ)</small>
+      <span class="links">
+        <a name="Request.poor_environ"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Environ with poor_ variables.<br><br>
+
+It is environ from <a href="#request" title="module">request</a>, or os.environ</div>
+    <h4 class="property">port <small>(READ)</small>
+      <span class="links">
+        <a name="Request.port"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Alias for server_port property.</div>
+    <h4 class="property">protocol <small>(READ)</small>
+      <span class="links">
+        <a name="Request.protocol"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Alias for server_protocol property</div>
+    <h4 class="property">referer <small>(READ)</small>
+      <span class="links">
+        <a name="Request.referer"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><a href="#Request" title="class">Request</a> referer if is available or None.</div>
+    <h4 class="property">remote_addr <small>(READ)</small>
+      <span class="links">
+        <a name="Request.remote_addr"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Remote address.</div>
+    <h4 class="property">remote_host <small>(READ)</small>
+      <span class="links">
+        <a name="Request.remote_host"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Remote hostname.</div>
+    <h4 class="property">scheme <small>(READ)</small>
+      <span class="links">
+        <a name="Request.scheme"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Alias for server_scheme property.</div>
+    <h4 class="property">secret_key <small>(READ)</small>
+      <span class="links">
+        <a name="Request.secret_key"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Value of poor_SecretKey variable.<br><br>
+
+Secret key is used by <a href="#PoorSession" title="class">PoorSession</a> class. It is generate from
+some server variables, and the best way is set programmatically
+by <a href="#Application.secret_key" title="(True, True, False)">Application.secret_key</a> from random data.</div>
+    <h4 class="property">secretkey <small>(READ)</small>
+      <span class="links">
+        <a name="Request.secretkey"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><b>DEPRECATED</b> alias for secret_key.</div>
+    <h4 class="property">server_admin <small>(READ)</small>
+      <span class="links">
+        <a name="Request.server_admin"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Server admin if set, or webmaster@hostname.</div>
+    <h4 class="property">server_hostname <small>(READ)</small>
+      <span class="links">
+        <a name="Request.server_hostname"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Server name variable.</div>
+    <h4 class="property">server_port <small>(READ)</small>
+      <span class="links">
+        <a name="Request.server_port"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Server port.</div>
+    <h4 class="property">server_protocol <small>(READ)</small>
+      <span class="links">
+        <a name="Request.server_protocol"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Server protocol, as given by the client.<br><br>
+
+In HTTP/0.9. cgi SERVER_PROTOCOL value.</div>
+    <h4 class="property">server_scheme <small>(READ)</small>
+      <span class="links">
+        <a name="Request.server_scheme"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property"><a href="#Request" title="class">Request</a> scheme, typical <code>http</code> or <code>https</code>.</div>
+    <h4 class="property">server_software <small>(READ)</small>
+      <span class="links">
+        <a name="Request.server_software"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Server software.</div>
+    <h4 class="property">status <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.status"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Http status code, which is <b><a href="#state" title="module">state</a>.<a href="#HTTP_OK" title="200">HTTP_OK</a> (200)</b> by default.<br><br>
+
+If you want to set this variable (which is very good idea in http_state
+handlers), it is good solution to use some of HTTP_ constant from
+<a href="#state" title="module">state</a> module.</div>
+    <h4 class="property">uri <small>(READ)</small>
+      <span class="links">
+        <a name="Request.uri"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">The path portion of the URI.</div>
+    <h4 class="property">uri_handler <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.uri_handler"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">This property is set at the same point as uri_rule.<br><br>
+
+It was set by <a href="#Application" title="class">Application</a> object when end point handler is known before
+calling all pre handlers. Typical use case is set some special
+attribute to handler, and read them in pre handler.</div>
+    <h4 class="property">uri_rule <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.uri_rule"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Rule from one of <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> handler table.<br><br>
+
+This property could be set once, and that do <a href="#Application" title="class">Application</a> object. There
+are some internal uri_rules which is set typical if some internal
+handler was called. There are: {_default_handler_, _directory_index_,
+_debug_info_ and _send_file_ }. In other case, there be url or regex.</div>
+    <h4 class="property">user <small>(READ | WRITE)</small>
+      <span class="links">
+        <a name="Request.user"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">For user object, who is login for example (default None).</div>
+    <h4 class="property">user_agent <small>(READ)</small>
+      <span class="links">
+        <a name="Request.user_agent"></a>
+        <a href="#">top</a></span></h4>
+    <div class="property">Browser user agent string.</div>
+    <h4 class="method"><i>def</i> __del__(self)
+      <span class="links">
+        <a name="Request.__del__" href="#Request.__del__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"></div>
+    <h4 class="method"><i>def</i> __end_of_request__(self)
+      <span class="links">
+        <a name="Request.__end_of_request__" href="#Request.__end_of_request__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Method <b>for internal use only!</b>.<br><br>
+
+This method was called from <a href="#Application" title="class">Application</a> object at the end of <a href="#request" title="module">request</a>
+for returning right value to <a href="#wsgi" title="module">wsgi</a> server.</div>
+    <h4 class="method"><i>def</i> __init__(self, environ, start_response, app_config)
+      <span class="links">
+        <a name="Request.__init__" href="#Request.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Object was created automatically in <a href="#wsgi" title="module">wsgi</a> module.<br><br>
+
+It's input parameters are the same, which <a href="#Application" title="class">Application</a> object gets from
+WSGI server plus file callback for auto <a href="#request" title="module">request</a> body parsing.</div>
+    <h4 class="method"><i>def</i> __reset_buffer__(self)
+      <span class="links">
+        <a name="Request.__reset_buffer__" href="#Request.__reset_buffer__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Clean _buffer (*for internal server error use*).<br><br>
+
+It could be used in error pages, typical in <a href="#internal_server_error" title="(req)">internal_server_error</a>.
+But be careful, this method not help you, when any data was sent
+to <a href="#wsgi" title="module">wsgi</a> server.</div>
+    <h4 class="method"><i>def</i> construct_url(self, uri)
+      <span class="links">
+        <a name="Request.construct_url" href="#Request.construct_url">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">This function returns a fully qualified URI string.<br><br>
+
+Url is create from the path specified by uri, using the information
+stored in the <a href="#request" title="module">request</a> to determine the scheme, server host name
+and port. The port number is not included in the string if it is the
+same as the default port 80.</div>
+    <h4 class="method"><i>def</i> document_root(self)
+      <span class="links">
+        <a name="Request.document_root" href="#Request.document_root">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns DocumentRoot setting.</div>
+    <h4 class="method"><i>def</i> flush(self)
+      <span class="links">
+        <a name="Request.flush" href="#Request.flush">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Flushes the output buffer.</div>
+    <h4 class="method"><i>def</i> get_options(self)
+      <span class="links">
+        <a name="Request.get_options" href="#Request.get_options">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns dictionary with <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> variables from environment.<br><br>
+
+<a href="#Application" title="class">Application</a> variables start with <code>app_</code> prefix, but in returned
+dictionary is set without this prefix.
+<pre class="python">        <i>#!ini</i>
+        poor_LogLevel = warn        <i># Poor WSGI variable</i>
+        app_db_server = localhost   <i># <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> variable db_server</i>
+        app_templates = <a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>/templ   <i># <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a> variable templates</i></pre></div>
+    <h4 class="method"><i>def</i> get_remote_host(self)
+      <span class="links">
+        <a name="Request.get_remote_host" href="#Request.get_remote_host">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Returns REMOTE_ADDR CGI enviroment variable.</div>
+    <h4 class="method"><i>def</i> log_debug(self, message)
+      <span class="links">
+        <a name="Request.log_debug" href="#Request.log_debug">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Logging method, which create message as <a href="#LOG_DEBUG" title="(7, 'D')">LOG_DEBUG</a> level.</div>
+    <h4 class="method"><i>def</i> log_error(self, message, level=(3, &#39;E&#39;), server=None)
+      <span class="links">
+        <a name="Request.log_error" href="#Request.log_error">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">An interface to log error via <a href="#wsgi" title="module">wsgi</a>.errors.<br><br>
+
+Arguments:<br>
+<code class="param">message </code>- string with the error message<br>
+<code class="param">level </code>- is one of the following flags constants:<br>
+<code class="param">            </code><a href="#LOG_EMERG" title="(0, 'S')">LOG_EMERG</a><br>
+<code class="param">            </code><a href="#LOG_ALERT" title="(1, 'A')">LOG_ALERT</a><br>
+<code class="param">            </code><a href="#LOG_CRIT" title="(2, 'C')">LOG_CRIT</a><br>
+<code class="param">            </code><a href="#LOG_ERR" title="(3, 'E')">LOG_ERR</a>     (default)<br>
+<code class="param">            </code><a href="#LOG_WARNING" title="(4, 'W')">LOG_WARNING</a><br>
+<code class="param">            </code><a href="#LOG_NOTICE" title="(5, 'N')">LOG_NOTICE</a><br>
+<code class="param">            </code><a href="#LOG_INFO" title="(6, 'I')">LOG_INFO</a><br>
+<code class="param">            </code><a href="#LOG_DEBUG" title="(7, 'D')">LOG_DEBUG</a><br>
+<code class="param">            </code><a href="#LOG_NOERRNO" title="(8, '0')">LOG_NOERRNO</a><br>
+<code class="param">server </code>- interface only compatibility parameter</div>
+    <h4 class="method"><i>def</i> log_info(self, message)
+      <span class="links">
+        <a name="Request.log_info" href="#Request.log_info">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Logging method, which create message as <a href="#LOG_INFO" title="(6, 'I')">LOG_INFO</a> level.</div>
+    <h4 class="method"><i>def</i> log_warning(self, message)
+      <span class="links">
+        <a name="Request.log_warning" href="#Request.log_warning">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Logging method, which create message as <a href="#LOG_WARNING" title="(4, 'W')">LOG_WARNING</a> level.</div>
+    <h4 class="method"><i>def</i> read(self, length=-1)
+      <span class="links">
+        <a name="Request.read" href="#Request.read">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Read data from client (typical for XHR2 data POST).<br><br>
+
+If length is not set, or if is lower then zero, Content-Length was
+be use.</div>
+    <h4 class="method"><i>def</i> sendfile(self, path, offset=0, limit=-1)
+      <span class="links">
+        <a name="Request.sendfile" href="#Request.sendfile">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Send file defined by path to client.<br><br>
+
+Offset and len is not supported yet.
+<pre class="python"><var>    @<a href="#app" title="__poorwsgi__ - callable Application class instance">app</a>.route</var>(<i>'myfile.txt'</i>)
+    <b>def</b> <em>myfile</em>(req):
+        req.content_type(<i>'text/plain'</i>)
+        length = req.sendfile(<i>'myfile.txt'</i>)
+        req.log_error(<i>'sending myfile.txt with %d length'</i> % length)</pre></div>
+    <h4 class="method"><i>def</i> set_content_lenght(self, length)
+      <span class="links">
+        <a name="Request.set_content_lenght" href="#Request.set_content_lenght">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method"><b>DEPRECATED</b> Use req.clength = length instead of call this method.<br>
+<code class="param">    </code></div>
+    <h4 class="method"><i>def</i> write(self, data, flush=0)
+      <span class="links">
+        <a name="Request.write" href="#Request.write">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Write data to buffer.<br><br>
+
+If len of data is bigger then poor_BufferSize, data was be sent
+to client via old write method (directly). Otherwise, data was be sent
+at the end of <a href="#request" title="module">request</a> as iterable object.</div>
+    <h4 class="variable">re_httpUrlPatern = (^(http|https):\/\/, 32)
+      <span class="links">
+        <a name="re_httpUrlPatern"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable">simple regular expression for construct_url method</div>
+    <h2 class="module"><i>module</i> results
+      <span class="links">
+        <a name="results" href="#results">link</a> |
+        <a href="#">top</a></span></h2>
+    <div class="module">Default Poor WSGI handlers.</div>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">_io</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">builtins</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">inspect</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">json</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule">mimetypes</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">operator</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule">path</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">posix</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">sys</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">time</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">traceback</span>
+    <h3 class="class"><i>class</i> SERVER_RETURN
+      <span class="links">
+        <a name="SERVER_RETURN" href="#SERVER_RETURN">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Compatible with mod_python.apache exception.</div>
+    <h4 class="method"><i>def</i> __init__(self, code=500)
+      <span class="links">
+        <a name="SERVER_RETURN.__init__" href="#SERVER_RETURN.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">code is one of HTTP_* status from <a href="#state" title="module">state</a> module</div>
+    <h3 class="function"><i>def</i> bad_request(req)
+      <span class="links">
+        <a name="bad_request" href="#bad_request">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">400 Bad <a href="#Request" title="class">Request</a> server error handler.</div>
+    <h3 class="function"><i>def</i> cmp(a, b)
+      <span class="links">
+        <a name="cmp" href="#cmp">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function"></div>
+    <h3 class="function"><i>def</i> debug_info(req, app)
+      <span class="links">
+        <a name="debug_info" href="#debug_info">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function"></div>
+    <h3 class="function"><i>def</i> directory_index(req, _path)
+      <span class="links">
+        <a name="directory_index" href="#directory_index">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Returns directory index as html page</div>
+    <h3 class="function"><i>def</i> forbidden(req)
+      <span class="links">
+        <a name="forbidden" href="#forbidden">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">403 - Forbidden Access server error handler.</div>
+    <h3 class="function"><i>def</i> handlers_view(handlers, sort=True)
+      <span class="links">
+        <a name="handlers_view" href="#handlers_view">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Returns sorted handlers list.</div>
+    <h3 class="function"><i>def</i> hbytes(val)
+      <span class="links">
+        <a name="hbytes" href="#hbytes">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Return pair value and unit.</div>
+    <h3 class="function"><i>def</i> html_escape(s)
+      <span class="links">
+        <a name="html_escape" href="#html_escape">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Escape to html entities.</div>
+    <h3 class="function"><i>def</i> human_methods_(m)
+      <span class="links">
+        <a name="human_methods_" href="#human_methods_">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Return <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> in text.</div>
+    <h3 class="function"><i>def</i> internal_server_error(req)
+      <span class="links">
+        <a name="internal_server_error" href="#internal_server_error">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">More debug 500 Internal Server Error server handler.<br><br>
+
+It was be called automatically when no handlers are not defined
+in dispatch_table.errors. If poor_Debug variable is to On, Tracaback
+will be generated.</div>
+    <h3 class="function"><i>def</i> method_not_allowed(req)
+      <span class="links">
+        <a name="method_not_allowed" href="#method_not_allowed">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">405 Method Not Allowed server error handler.</div>
+    <h3 class="function"><i>def</i> not_found(req)
+      <span class="links">
+        <a name="not_found" href="#not_found">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">404 - Page Not Found server error handler.</div>
+    <h3 class="function"><i>def</i> not_implemented(req, code=None)
+      <span class="links">
+        <a name="not_implemented" href="#not_implemented">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">501 Not Implemented server error handler.</div>
+    <h3 class="function"><i>def</i> not_modified(req)
+      <span class="links">
+        <a name="not_modified" href="#not_modified">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function"></div>
+    <h3 class="function"><i>def</i> redirect(req, uri, permanent=0, text=None)
+      <span class="links">
+        <a name="redirect" href="#redirect">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Redirect the browser to another location.<br><br>
+
+When permanent is true, MOVED_PERMANENTLY status is sent to the client,
+otherwise it is MOVED_TEMPORARILY. A short text is sent to the browser
+informing that the document has moved (for those rare browsers that do not
+support redirection); this text can be overridden by supplying a text
+string.<br><br>
+
+This function raises <a href="#SERVER_RETURN" title="class">SERVER_RETURN</a> exception with a value of <a href="#state" title="module">state</a>.<a href="#DONE" title="1">DONE</a> to
+ensuring that any later phases or stacked handlers do not run.</div>
+    <h3 class="function"><i>def</i> send_file(req, path, content_type=None)
+      <span class="links">
+        <a name="send_file" href="#send_file">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Returns file with content_type as fast as possible on <a href="#wsgi" title="module">wsgi</a>.</div>
+    <h3 class="function"><i>def</i> send_json(req, data, **kwargs)
+      <span class="links">
+        <a name="send_json" href="#send_json">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Send data as <a href="#application" title="__poorwsgi__ - callable Application class instance">application</a>/json.</div>
+    <h3 class="function"><i>def</i> uni(text)
+      <span class="links">
+        <a name="uni" href="#uni">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">Automatic conversion from str to unicode with utf-8 encoding.</div>
+    <h4 class="variable">default_shandlers = {304: {1: &lt;function not_modified at 0x7fc7d62f76a8&gt;, 2: &lt;function not_modified at 0x7fc7d62f76a8&gt;, 4: &lt;function not_modified at 0x7fc7d62f76a8&gt;, 8: &lt;function not_modified at 0x7fc7d62f76a8&gt;, 16: &lt;function not_modified at...
+      <span class="links">
+        <a name="default_shandlers"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable">http <a href="#state" title="module">state</a> handlers, which is called if programmer don't defined his own</div>
+    <h4 class="variable">html_escape_table = {&#39;&amp;&#39;: &#39;&amp;amp;&#39;, &#39;&#34;&#39;: &#39;&amp;quot;&#39;, &#34;&#39;&#34;: &#39;&amp;apos;&#39;, &#39;&gt;&#39;: &#39;&amp;gt;&#39;, &#39;&lt;&#39;: &#39;&amp;lt;&#39;}
+      <span class="links">
+        <a name="html_escape_table"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h2 class="module"><i>module</i> session
+      <span class="links">
+        <a name="session" href="#session">link</a> |
+        <a href="#">top</a></span></h2>
+    <div class="module"><a href="#PoorSession" title="class">PoorSession</a> self-contained cookie class.</div>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">_hashlib</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">_pickle</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">base64</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">builtins</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="submodule">bz2</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">http.cookies</span>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">time</span>
+    <h3 class="class"><i>class</i> NoCompress
+      <span class="links">
+        <a name="NoCompress" href="#NoCompress">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Fake compress class/module whith two static method for <a href="#PoorSession" title="class">PoorSession</a>.<br><br>
+
+If compress parameter is None, this class is use</div>
+    <h4 class="method"><i>def</i> compress(data, compresslevel=9)
+      <span class="links">
+        <a name="NoCompress.compress" href="#NoCompress.compress">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Get two params, data, and compresslevel. Method only return data.</div>
+    <h4 class="method"><i>def</i> decompress(data)
+      <span class="links">
+        <a name="NoCompress.decompress" href="#NoCompress.decompress">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Get one parameter data, which returns.</div>
+    <h3 class="class"><i>class</i> PoorSession
+      <span class="links">
+        <a name="PoorSession" href="#PoorSession">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="class">Self-contained cookie with <a href="#session" title="module">session</a> data.<br><br>
+
+You cat store or read data from object via PoorSesssion.data variable which
+must be dictionary. Data is stored to cookie by pickle dump. Be careful
+with stored object. You can add object with litle python trick:
+<pre class="python">    sess = <a href="#PoorSession" title="class">PoorSession</a>(req)
+
+    sess.data[<i>'class'</i>] = obj.__class__          <i># write to cookie</i>
+    sess.data[<i>'dict'</i>] = obj.__dict__.copy()
+
+    obj = sess.data[<i>'class'</i>]()                  <i># read from cookie</i>
+    obj.__dict__ = sess.data[<i>'dict'</i>].copy()</pre>
+Or for beter solution, you can create export and import <a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> for you
+object like that:
+<pre class="python">    <b>class</b> <em>Obj</em>(<kbd>object</kbd>):
+        <b>def</b> <em>import</em>(self, d):
+            self.attr1 = d[<i>'attr1'</i>]
+            self.attr2 = d[<i>'attr2'</i>]
+
+        <b>def</b> <em>export</em>(self):
+            d = {<i>'attr1'</i>: self.attr1, <i>'attr2'</i>: self.attr2}
+            <b>return</b> d
+
+    obj = Obj()
+    sess = <a href="#PoorSession" title="class">PoorSession</a>(req)
+
+    sess.data[<i>'class'</i>] = obj.__class__          <i># write to cookie</i>
+    sess.data[<i>'dict'</i>] = obj.export()
+
+    obj = sess.data[<i>'class'</i>]()                  <i># read from cookie</i>
+    obj.<b>import</b>(sess.data[<i>'dict'</i>])</pre></div>
+    <h4 class="method"><i>def</i> __init__(self, req, expires=0, path=&#39;/&#39;, SID=&#39;SESSID&#39;, compress=&lt;module &#39;bz2&#39; from &#39;/usr/lib/python3.6/bz2.py&#39;&gt;)
+      <span class="links">
+        <a name="PoorSession.__init__" href="#PoorSession.__init__">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Constructor.<br><br>
+
+Arguments:<br>
+<code class="param">req      </code><a href="#Request" title="class">Request</a> object<br>
+<code class="param">expires  </code>cookie expire time in seconds, if it 0, no expire is set<br>
+<code class="param">path     </code>cookie path<br>
+<code class="param">SID      </code>cookie key name<br>
+<code class="param">compress </code>compress module or class. Could be bz2, gzip.zlib, or any<br>
+<code class="param">         </code>other, which have standard compress and decompress<br>
+<code class="param">         </code><a href="#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>. Or it could be None to not use any compressing<br>
+<code class="param">         </code>method.</div>
+    <h4 class="method"><i>def</i> destroy(self)
+      <span class="links">
+        <a name="PoorSession.destroy" href="#PoorSession.destroy">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Destroy <a href="#session" title="module">session</a>. In fact, set cookie expires value to past (-1).</div>
+    <h4 class="method"><i>def</i> header(self, req, headers_out=None)
+      <span class="links">
+        <a name="PoorSession.header" href="#PoorSession.header">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Generate cookie headers and append it to headers_out if it set.<br><br>
+
+Returns list of cookie header pairs.</div>
+    <h4 class="method"><i>def</i> renew(self)
+      <span class="links">
+        <a name="PoorSession.renew" href="#PoorSession.renew">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Renew cookie, in fact set expires to next time if it set.</div>
+    <h4 class="method"><i>def</i> write(self, req)
+      <span class="links">
+        <a name="PoorSession.write" href="#PoorSession.write">link</a> |
+        <a href="#">top</a></span></h4>
+    <div class="method">Store data to cookie value.<br><br>
+
+This method is called automatically in header method.</div>
+    <h3 class="function"><i>def</i> hidden(text, passwd)
+      <span class="links">
+        <a name="hidden" href="#hidden">link</a> |
+        <a href="#">top</a></span></h3>
+    <div class="function">(en|de)crypt text with sha hash of passwd via xor.<br><br>
+
+Arguments:<br>
+<code class="param">text    </code>raw data to (en|de)crypt. Could be str, unicode or bytes<br>
+<code class="param">passwd  </code>password<br>
+<code class="param">returns </code>string</div>
+    <h2 class="module"><i>module</i> state
+      <span class="links">
+        <a name="state" href="#state">link</a> |
+        <a href="#">top</a></span></h2>
+    <div class="module">Constants like http status code, log <a href="#levels" title="{'emerg': (0, 'S'), 'alert': (1, 'A'), 'crit': (2, 'C'), 'error': (3, 'E'), 'warn': (4, 'W'), 'notice': (5, 'N'), 'info': (6, 'I'), 'debug': (7, 'D')}">levels</a> and method types.</div>
+    <div class="submodules">
+      <small>Module dependences:</small>
+      <span class="dependence">operator</span>
+    <h4 class="variable">DECLINED = 2
+      <span class="links">
+        <a name="DECLINED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">DONE = 1
+      <span class="links">
+        <a name="DONE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_ACCEPTED = 202
+      <span class="links">
+        <a name="HTTP_ACCEPTED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_BAD_GATEWAY = 502
+      <span class="links">
+        <a name="HTTP_BAD_GATEWAY"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_BAD_REQUEST = 400
+      <span class="links">
+        <a name="HTTP_BAD_REQUEST"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_CONFLICT = 409
+      <span class="links">
+        <a name="HTTP_CONFLICT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_CONTINUE = 100
+      <span class="links">
+        <a name="HTTP_CONTINUE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_CREATED = 201
+      <span class="links">
+        <a name="HTTP_CREATED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_ERROR = 3
+      <span class="links">
+        <a name="HTTP_ERROR"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_EXPECTATION_FAILED = 417
+      <span class="links">
+        <a name="HTTP_EXPECTATION_FAILED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_FAILED_DEPENDENCY = 424
+      <span class="links">
+        <a name="HTTP_FAILED_DEPENDENCY"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_FORBIDDEN = 403
+      <span class="links">
+        <a name="HTTP_FORBIDDEN"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_GATEWAY_TIME_OUT = 504
+      <span class="links">
+        <a name="HTTP_GATEWAY_TIME_OUT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_GONE = 410
+      <span class="links">
+        <a name="HTTP_GONE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_INSUFFICIENT_STORAGE = 507
+      <span class="links">
+        <a name="HTTP_INSUFFICIENT_STORAGE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_INTERNAL_SERVER_ERROR = 500
+      <span class="links">
+        <a name="HTTP_INTERNAL_SERVER_ERROR"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_LENGTH_REQUIRED = 411
+      <span class="links">
+        <a name="HTTP_LENGTH_REQUIRED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_LOCKED = 423
+      <span class="links">
+        <a name="HTTP_LOCKED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_METHOD_NOT_ALLOWED = 405
+      <span class="links">
+        <a name="HTTP_METHOD_NOT_ALLOWED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_MOVED_PERMANENTLY = 301
+      <span class="links">
+        <a name="HTTP_MOVED_PERMANENTLY"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_MOVED_TEMPORARILY = 302
+      <span class="links">
+        <a name="HTTP_MOVED_TEMPORARILY"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_MULTIPLE_CHOICES = 300
+      <span class="links">
+        <a name="HTTP_MULTIPLE_CHOICES"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_MULTI_STATUS = 207
+      <span class="links">
+        <a name="HTTP_MULTI_STATUS"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_NON_AUTHORITATIVE = 203
+      <span class="links">
+        <a name="HTTP_NON_AUTHORITATIVE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_NOT_ACCEPTABLE = 406
+      <span class="links">
+        <a name="HTTP_NOT_ACCEPTABLE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_NOT_EXTENDED = 510
+      <span class="links">
+        <a name="HTTP_NOT_EXTENDED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_NOT_FOUND = 404
+      <span class="links">
+        <a name="HTTP_NOT_FOUND"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_NOT_IMPLEMENTED = 501
+      <span class="links">
+        <a name="HTTP_NOT_IMPLEMENTED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_NOT_MODIFIED = 304
+      <span class="links">
+        <a name="HTTP_NOT_MODIFIED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_NO_CONTENT = 204
+      <span class="links">
+        <a name="HTTP_NO_CONTENT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_OK = 200
+      <span class="links">
+        <a name="HTTP_OK"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_PARTIAL_CONTENT = 206
+      <span class="links">
+        <a name="HTTP_PARTIAL_CONTENT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_PAYMENT_REQUIRED = 402
+      <span class="links">
+        <a name="HTTP_PAYMENT_REQUIRED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_PRECONDITION_FAILED = 412
+      <span class="links">
+        <a name="HTTP_PRECONDITION_FAILED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_PROCESSING = 102
+      <span class="links">
+        <a name="HTTP_PROCESSING"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_PROXY_AUTHENTICATION_REQUIRED = 407
+      <span class="links">
+        <a name="HTTP_PROXY_AUTHENTICATION_REQUIRED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_RANGE_NOT_SATISFIABLE = 416
+      <span class="links">
+        <a name="HTTP_RANGE_NOT_SATISFIABLE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_REQUEST_ENTITY_TOO_LARGE = 413
+      <span class="links">
+        <a name="HTTP_REQUEST_ENTITY_TOO_LARGE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_REQUEST_TIME_OUT = 408
+      <span class="links">
+        <a name="HTTP_REQUEST_TIME_OUT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_REQUEST_URI_TOO_LARGE = 414
+      <span class="links">
+        <a name="HTTP_REQUEST_URI_TOO_LARGE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_RESET_CONTENT = 205
+      <span class="links">
+        <a name="HTTP_RESET_CONTENT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_SEE_OTHER = 303
+      <span class="links">
+        <a name="HTTP_SEE_OTHER"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_SERVICE_UNAVAILABLE = 503
+      <span class="links">
+        <a name="HTTP_SERVICE_UNAVAILABLE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_SWITCHING_PROTOCOLS = 101
+      <span class="links">
+        <a name="HTTP_SWITCHING_PROTOCOLS"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_TEMPORARY_REDIRECT = 307
+      <span class="links">
+        <a name="HTTP_TEMPORARY_REDIRECT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_UNAUTHORIZED = 401
+      <span class="links">
+        <a name="HTTP_UNAUTHORIZED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_UNPROCESSABLE_ENTITY = 422
+      <span class="links">
+        <a name="HTTP_UNPROCESSABLE_ENTITY"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_UNSUPPORTED_MEDIA_TYPE = 415
+      <span class="links">
+        <a name="HTTP_UNSUPPORTED_MEDIA_TYPE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_USE_PROXY = 305
+      <span class="links">
+        <a name="HTTP_USE_PROXY"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_VARIANT_ALSO_VARIES = 506
+      <span class="links">
+        <a name="HTTP_VARIANT_ALSO_VARIES"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">HTTP_VERSION_NOT_SUPPORTED = 505
+      <span class="links">
+        <a name="HTTP_VERSION_NOT_SUPPORTED"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_ALERT = (1, &#39;A&#39;)
+      <span class="links">
+        <a name="LOG_ALERT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_CRIT = (2, &#39;C&#39;)
+      <span class="links">
+        <a name="LOG_CRIT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_DEBUG = (7, &#39;D&#39;)
+      <span class="links">
+        <a name="LOG_DEBUG"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_EMERG = (0, &#39;S&#39;)
+      <span class="links">
+        <a name="LOG_EMERG"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_ERR = (3, &#39;E&#39;)
+      <span class="links">
+        <a name="LOG_ERR"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_INFO = (6, &#39;I&#39;)
+      <span class="links">
+        <a name="LOG_INFO"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_NOERRNO = (8, &#39;0&#39;)
+      <span class="links">
+        <a name="LOG_NOERRNO"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_NOTICE = (5, &#39;N&#39;)
+      <span class="links">
+        <a name="LOG_NOTICE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">LOG_WARNING = (4, &#39;W&#39;)
+      <span class="links">
+        <a name="LOG_WARNING"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_ALL = 511
+      <span class="links">
+        <a name="METHOD_ALL"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable">short constants for set all method types <a href="#METHOD_HEAD" title="1">METHOD_HEAD</a> | ... | <a href="#METHOD_PATCH" title="256">METHOD_PATCH</a></div>
+    <h4 class="variable">METHOD_CONNECT = 128
+      <span class="links">
+        <a name="METHOD_CONNECT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_DELETE = 16
+      <span class="links">
+        <a name="METHOD_DELETE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_GET = 2
+      <span class="links">
+        <a name="METHOD_GET"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_GET_POST = 7
+      <span class="links">
+        <a name="METHOD_GET_POST"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable">short constant for set <a href="#METHOD_HEAD" title="1">METHOD_HEAD</a> | <a href="#METHOD_GET" title="2">METHOD_GET</a> | <a href="#METHOD_POST" title="4">METHOD_POST</a></div>
+    <h4 class="variable">METHOD_HEAD = 1
+      <span class="links">
+        <a name="METHOD_HEAD"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_OPTIONS = 64
+      <span class="links">
+        <a name="METHOD_OPTIONS"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_PATCH = 256
+      <span class="links">
+        <a name="METHOD_PATCH"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_POST = 4
+      <span class="links">
+        <a name="METHOD_POST"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_PUT = 8
+      <span class="links">
+        <a name="METHOD_PUT"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">METHOD_TRACE = 32
+      <span class="links">
+        <a name="METHOD_TRACE"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">OK = 0
+      <span class="links">
+        <a name="OK"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    <h4 class="variable">levels = {&#39;emerg&#39;: (0, &#39;S&#39;), &#39;alert&#39;: (1, &#39;A&#39;), &#39;crit&#39;: (2, &#39;C&#39;), &#39;error&#39;: (3, &#39;E&#39;), &#39;warn&#39;: (4, &#39;W&#39;), &#39;notice&#39;: (5, &#39;N&#39;), &#39;info&#39;: (6, &#39;I&#39;),...
+      <span class="links">
+        <a name="levels"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable">log <a href="#levels" title="{'emerg': (0, 'S'), 'alert': (1, 'A'), 'crit': (2, 'C'), 'error': (3, 'E'), 'warn': (4, 'W'), 'notice': (5, 'N'), 'info': (6, 'I'), 'debug': (7, 'D')}">levels</a> which could be set with poor_LogLevel environment variable</div>
+    <h4 class="variable">methods = {&#39;HEAD&#39;: 1, &#39;GET&#39;: 2, &#39;POST&#39;: 4, &#39;PUT&#39;: 8, &#39;DELETE&#39;: 16, &#39;TRACE&#39;: 32, &#39;OPTIONS&#39;: 64, &#39;CONNECT&#39;: 128, &#39;PATCH&#39;: 256}
+      <span class="links">
+        <a name="methods"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable">know method types</div>
+    <h4 class="variable">sorted_methods = [(&#39;HEAD&#39;, 1), (&#39;GET&#39;, 2), (&#39;POST&#39;, 4), (&#39;PUT&#39;, 8), (&#39;DELETE&#39;, 16), (&#39;TRACE&#39;, 32), (&#39;OPTIONS&#39;, 64), (&#39;CONNECT&#39;, 128), (&#39;PATCH&#39;, 256)]
+      <span class="links">
+        <a name="sorted_methods"></a>
+        <a href="#">top</a></span></h4>
+    <div class="variable"></div>
+    </div><!-- content --!>
+      <div class="footer">
+        <div class="line"></div>
+        <div class="credit">
+            Create by Ondřej Tůma (<a href="http://ipv6.mcbig.cz">McBig</a>).
+            &copy; 2013. Generate by
+            <a href="http://poorhttp.zeropage.cz/jinja24doc.html">Jinja24doc</a>.
+        </div>
+      </div><!-- footer --!>
+    </div><!-- page --!>
+  </body>
+</html>

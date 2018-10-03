@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Poor WSGI homepage documentation">
+    <meta name="author" content="Ondřej Tůma McBig">
+
+    <title>Poor WSGI for Python</title>
+
+    <link href="style.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <div class="page">
+
+      <div class="header">
+        <h1>Poor WSGI for Python</h1>
+        <small>Light WSGI connector with uri routing support.</small>
+        <div class="pannel">
+          <menu class="main">
+            <span class="item selected"><a href="index.html" title="" >Documentation</a></span>
+            <span class="item "><a href="api.html" title="" >Api Reference</a></span>
+            <span class="item "><a href="licence.html" title="">Licence</a></span>
+            <span class="item"><a href="https://github.com/PoorHttp/PoorWSGI">GitHub</a></span>
+            <span class="item"><a href="https://github.com/PoorHttp/PoorWSGI/issues">GitHub::Issues</a></span>
+            <span class="item"><a href="https://pypi.python.org/pypi/PoorWSGI">PyPI</a></span>
+          </menu>        </div>      </div>
+
+
+
+
+      <menu class="sidebar">
+<h2><a href="#easy-to-use">Easy to use</a></h2>
+<h2><a href="#installation-&-configuration">Installation & Configuration</a></h2>
+<h3><a href="#install">Install</a></h3>
+<h3><a href="#unstable-version">Unstable version</a></h3>
+<h3><a href="#configuration">Configuration</a></h3>
+<h3><a href="#poor-http-server-example">Poor HTTP server example</a></h3>
+<h3><a href="#uwsgi-server-example">uWsgi server example</a></h3>
+<h2><a href="#tutorial">Tutorial</a></h2>
+<h3><a href="#returning-values">Returning values</a></h3>
+<h3><a href="#routes-and-other-handlers">Routes and other handlers</a></h3>
+<h3><a href="#default-and-http-state-handler">Default and http state handler</a></h3>
+<h3><a href="#request-variables">Request variables</a></h3>
+<h3><a href="#headers-and-sessions">Headers and Sessions</a></h3>
+<h2><a href="#debugging">Debugging</a></h2>
+<h3><a href="#profiling">Profiling</a></h3>
+<h2><a href="#few-word-at-the-end">Few word at the end</a></h2>
+<h3><a href="#changelog">ChangeLog</a></h3>
+<h3><a href="#simple.py">Simple.py</a></h3>
+      </menu>
+
+    <div class="content">
+      <div><a name="easy-to-use"></a><h2>Easy to use<span class="links"><a href="#easy-to-use">link</a> | <a href="#">top</a></span></h2>
+Poor WSGI for Python is light WGI connector with uri routing between WSGI
+server and your application. It have mod_python compatible request object,
+which is post to all uri or http state handler. The simplest way to run and
+test it looks like that:
+<pre class="python">    <b>from</b> wsgiref.simple_server <b>import</b> make_server
+    <b>from</b> poorwsgi <b>import</b> Application
+
+    app = Application(<i>'test'</i>)
+<var>
+    @app.route</var>(<i>'/test'</i>)
+    <b>def</b> <em>root_uri</em>(req):
+        <b>return</b> <i>'Hello world'</i>
+
+    <b>if</b> __name__ == <i>'__main__'</i>:
+        httpd = make_server(<i>'127.0.0.1'</i>, <u>8080</u>, app)
+        httpd.serve_forever()</pre>
+You can use python wsgiref.simple_server for test it:
+<pre class="python">    ~$ python simple.py</pre>
+It has base error pages like 403, 404, 405, 500 or 501. When 500 internal server
+error have debug output if poor_Debug is set. And there is special debug page
+on <code>/debug-info</code> uri, which is available when poor_Debug is set too.
+<pre class="python">    ~$ poor_Debug=On python simple.py</pre>
+Poor WSGI have some functions, to you can use as real http server, which could
+send files with right mime-type from disk, or generate directory listing. See
+Configuration section for more info.
+<pre class="python">    ~$ poor_Debug=On poor_DocumentRoot=./web poor_DocumentIndex=On python simple.py</pre>
+If you are new with it, please see fast Tutorial on this page.<a name="installation-&-configuration"></a><h2>Installation & Configuration<span class="links"><a href="#installation-&-configuration">link</a> | <a href="#">top</a></span></h2>
+<a name="install"></a><h3>Install<span class="links"><a href="#install">link</a> | <a href="#">top</a></span></h3>
+<a name="source-tarbal"></a><h4>Source tarbal<span class="links"><a href="#source-tarbal">link</a> | <a href="#">top</a></span></h4>
+<pre class="text">
+    ~$ wget <a href="https://pypi.python.org/packages/source/P/PoorWSGI/PoorWSGI-1.6.1.tar.gz">https://pypi.python.org/packages/source/P/PoorWSGI/PoorWSGI-1.6.1.tar.gz</a>
+    ~$ tar xzf PoorWSGI-1.6.1.tar.gz
+    ~$ cd PoorWSGI-1.6.1
+    ~# python setup.py install
+
+    if you have jinja24doc and you want to install this html documentation
+    ~# python setup.py install_html</pre><a name="source-from-git"></a><h4>Source from git<span class="links"><a href="#source-from-git">link</a> | <a href="#">top</a></span></h4>
+<pre class="text">
+    ~$ git clone git@github.com:PoorHttp/PoorWSGI.git
+    or
+    ~$ git clone <a href="https://github.com/PoorHttp/PoorWSGI.git">https://github.com/PoorHttp/PoorWSGI.git</a>
+
+    ~$ cd PoorWSGI
+    ~# python setup.py install
+
+    if you have jinja24doc and you want to install this html documentation
+    ~# python setup.py install_html</pre><a name="install-from-pypi"></a><h4>Install from PyPI<span class="links"><a href="#install-from-pypi">link</a> | <a href="#">top</a></span></h4>
+PoorWSGI use ordereddict which was append to collections in Python 2.7, so for
+Python 2.6 and less you need to install ordereddict package:
+<pre class="text">
+    ~$ pip install ordereddict      # only for Python2.6 and less
+    ~$ pip install PoorWSGI</pre><a name="unstable-version"></a><h3>Unstable version<span class="links"><a href="#unstable-version">link</a> | <a href="#">top</a></span></h3>
+Developing of next version is pushed to <code>unstable</code> branch. If you want to use
+this version, you must install it from git.
+<pre class="text">
+    ~$ git clone git@github.com:PoorHttp/PoorWSGI.git
+    or
+    ~$ git clone <a href="https://github.com/PoorHttp/PoorWSGI.git">https://github.com/PoorHttp/PoorWSGI.git</a>
+
+    ~$ cd PoorWSGI
+    ~$ git checkout unstable
+    ~# python setup.py install</pre>
+Or you can download zip file from github.
+<pre class="text">
+    ~$ wget <a href="https://github.com/PoorHttp/PoorWSGI/archive/unstable.zip">https://github.com/PoorHttp/PoorWSGI/archive/unstable.zip</a>
+    ~$ unzip unstable.zip
+    ~$ cd PoorWSGI-unstable
+    ~$ python setup.py install</pre>
+Documentation for new version is at
+<a href="unstable">unstable</a>.<a name="configuration"></a><h3>Configuration<span class="links"><a href="#configuration">link</a> | <a href="#">top</a></span></h3>
+Poor WSGI is configured via environment variables with poor_* prefix.<a name="poor_buffersize"></a><h4>poor_BufferSize<span class="links"><a href="#poor_buffersize">link</a> | <a href="#">top</a></span></h4>
+Buffer size in bytes is size of "FIFO" like buffer, which is used for every
+request. Default value is 16384 bytes which is 16KiB.<a name="poor_debug"></a><h4>poor_Debug<span class="links"><a href="#poor_debug">link</a> | <a href="#">top</a></span></h4>
+If poor_Debug is <code>On</code>, internal server error page have debug traceback and
+<code>/debug-info</code> page is activate.<a name="poor_documentindex"></a><h4>poor_DocumentIndex<span class="links"><a href="#poor_documentindex">link</a> | <a href="#">top</a></span></h4>
+If poor_DocumentRoot is set and poor_DocumentIndex is <code>On</code>, poor WSGI can
+generate document index from dictionary like real http servers. Default is
+<code>Off</code>.<a name="poor_documentroot"></a><h4>poor_DocumentRoot<span class="links"><a href="#poor_documentroot">link</a> | <a href="#">top</a></span></h4>
+pooor_DocumentRoot is dictionary, which is accessible files from. Files are
+sent via Request.sendfile method, which is not optimized yet. Method reads
+data for poor_BufferSize size blocks. And of course, before files is set,
+right <code>Content-Type</code> from mime-type and <code>Content-Length</code> headers are set.<a name="poor_loglevel"></a><h4>poor_LogLevel<span class="links"><a href="#poor_loglevel">link</a> | <a href="#">top</a></span></h4>
+One of log level for error_log output like in Apache http server. All choices
+are: <code>debug, info, notice, warn, error, alert, emerg</code>. Default is <code>warn</code> that
+means warn, error, alert and emerg type of errors are send to error file from
+WSGI, which is typical error_log file of WSGI server.<a name="poor_secretkey"></a><h4>poor_SecretKey<span class="links"><a href="#poor_secretkey">link</a> | <a href="#">top</a></span></h4>
+If you want to use PoorSession class, as self-contained cookie, it is
+<b>important</b> to set poor_SecretKey as pass phrase for hidden function, which is
+call from PoorSession class. Default value is stupid string from versions and
+server software which is really insufficient.<a name="poor-http-server-example"></a><h3>Poor HTTP server example<span class="links"><a href="#poor-http-server-example">link</a> | <a href="#">top</a></span></h3>
+Poor WSGI variables are system environment variables, which could be set in
+<code>environ</code> section in poorhttp.ini file. Only python file with <code>application</code>
+function or class must be set in predefined variable in <code>http</code> section:
+<pre class="ini">
+<b>    [http]</b>
+    ...
+    <i># your main python file, where app, resp. application from wsgi module</i>
+    <i># is imported</i>
+<u>    application</u> = /srv/simple.py
+
+    ...
+<b>    [environ]</b>
+    <i># debug - internal server errror page with traceback, debug-info page</i>
+<u>    poor_Debug</u> = Off
+<u>    poor_DocumentRoot</u> = /srv/public
+<u>    poor_DocumentIndex</u> = On
+    <i># only error alert an emerg type are log</i>
+<u>    poor_LogLevel</u> = error
+</pre><a name="uwsgi-server-example"></a><h3>uWsgi server example<span class="links"><a href="#uwsgi-server-example">link</a> | <a href="#">top</a></span></h3>
+uWsgi server have more choices how is configurable. Here is it's ini file,
+which have one <code>uwsgi</code> section with <code>wsgi-file</code> variable, where we need to set
+your main python file, and lots of env variables, which is use to set
+environment variables.
+<pre class="ini">
+<b>    [uwsgi]</b>
+    ...
+    <i># your main python file, where app, resp. application from wsgi module</i>
+    <i># is imported</i>
+<u>    wsgi</u>-file = /srv/simple.py
+    ...
+    <i># variables must be set without space between variable equation and value</i>
+<u>    env</u> = poor_Debug=On
+<u>    env</u> = poor_DocumentRoot=/srv/public
+<u>    env</u> = poor_SecretKey=MyApplication@Super!Secret?Password:-)</pre><a name="tutorial"></a><h2>Tutorial<span class="links"><a href="#tutorial">link</a> | <a href="#">top</a></span></h2>
+<a name="returning-values"></a><h3>Returning values<span class="links"><a href="#returning-values">link</a> | <a href="#">top</a></span></h3>
+Any standard functions, resp. uri handlers got Request object as parameter,
+and could end with a few of choices. First, known from another frameworks are
+string. If string is returned, connector write that to internal buffer for
+you, and set DONE value as finished state.
+<pre class="python"><var>    @app.route</var>(<i>'/some/uri'</i>)
+    <b>def</b> <em>some_uri</em>(req):
+        ...
+        <b>return</b> <i>'This is content for some uri'</i></pre>
+Second, standard method of return content resp. end of uri handler is write
+data to internal buffer and return some of state. This method is known from
+apaches mod_python:
+<pre class="python"><var>    @app.route</var>(<i>'/some/uri'</i>)
+    <b>def</b> <em>some_uri</em>(req):
+        ...
+        req.write(<i>'This is content for some uri'</i>)
+        <b>return</b> state.DONE</pre>
+Last way, how uri handler could be ended, is raise SERVER_RETURN object, which
+is known from apaches mod_python too. You can return as parametr of
+SERVER_RETURN object one of request state: <code>OK, DONE or DECLINED</code>
+or in probably more times way, one of http state like as
+<code>HTTP_MOVED_PERMANENTLY, HTTP_SEE_OTHER, HTTP_FORBIDDEN</code> and so on.
+<pre class="python"><var>    @app.route</var>(<i>'/some/uri'</i>)
+    <b>def</b> <em>some_uri</em>(req):
+        ...
+        <b>if</b> <tt>not</tt> user:
+            <b>raise</b> SERVER_RETURN(state.HTTP_FORBIDDEN)
+        req.write(<i>'This is content for some uri'</i>)
+        <b>return</b> state.DONE</pre>
+Poor WSGI have try except blocks, where this SERVER_RETURN object is caught,
+and if state is not one of OK, HTTP_OK or DONE, http state handler is called.<br><br>
+
+As you can see, page data are returned as one big string, or could be write to
+internal buffer. You can call flush method like in mod_pytho, which send data
+at the moment of call of this method to WSGI server, but WSGI server can send
+data to client at and of your handler.<br><br>
+
+Before you send data, it could be to set <code>Content-Type</code> header of page data.
+Default vaule is <code>text/html; charset=utf-8</code>. You change content type by
+change Request.content_type variable or via Request.headers_out object.
+<code>Content-Length</code> was be set automatically if data are less then
+poor_BufferSize. Or you can set content length via Request.set_content_lenght
+method or headers_out too.
+<pre class="python"><var>    @app.route</var>(<i>'/some/uri'</i>)
+    <b>def</b> <em>some_uri</em>(req)
+        req.content_type = <i>"text/plain; charset=utf-8"</i>
+        req.write(<i>'Some data'</i>)
+        <b>return</b> state.DONE</pre>
+There is one Request method, which write data to internal buffer, end WSGI
+server of course for you: sendfile. Request.sendfile send file, or part of
+file via internal call of Request.write method and return len of written data.<a name="routes-and-other-handlers"></a><h3>Routes and other handlers<span class="links"><a href="#routes-and-other-handlers">link</a> | <a href="#">top</a></span></h3>
+There are too ways how to set handler. Via decorators of Application object, or
+method set_ where one of parameter is your handler. It is important how look
+your application. If your web project have one or a few files where your
+handlers are, it is good idea to use decorators. But if you have big project
+with more files, it could be difficult to load all files with decorated
+handlers. So that is right job for set_ methods in one file, like a route file
+or dispatch table.<a name="routes"></a><h4>Routes<span class="links"><a href="#routes">link</a> | <a href="#">top</a></span></h4>
+At this time, with this version, it could be set only simple routes with
+decorator route or method set_route. Both of methods have too parameters, uri
+and method, where uri is simple uri like <code>/some/uri/for/you</code> and method flags
+which is default METHOD_HEAD | METHOD_GET. There are other methods in state
+module like METHOD_POST, METHOD_PUT etc. There is two special constants
+METHOD_GET_POST which is HEAD | GET | POST, aned METHOD_ALL which is all
+supported methods. If method not match, but uri is exist in internal table,
+http state HTTP_METHOD_NOT_ALLOWED is return.
+<pre class="python"><var>    @app.route</var>(<i>'/some/uri'</i>)
+    <b>def</b> <em>some_uri</em>(req):
+        <b>return</b> <i>'Data of some uri'</i>
+
+    <b>def</b> <em>other_uri</em>(req):
+        <b>return</b> <i>'Data of other uri'</i>
+    app.set_route(<i>'/some/other/uri'</i>, other_uri, state.METHOD_GET_POST)</pre><a name="group-regular-expression-routes"></a><h4>Group regular expression routes<span class="links"><a href="#group-regular-expression-routes">link</a> | <a href="#">top</a></span></h4>
+As in other wsgi connectors, or frameworks if you want, there are way how to
+define routes with getting part of url path as parameter of handler. I call
+them <b>group regular expression routes</b>. You can use it in nice human-readable
+form or in your own regular expressions. Basic use is define by group name.
+<pre class="python">    <i># group regular expression</i>
+<var>    @app.route</var>(<i>'/user/&lt;name&gt;'</i>)
+    <b>def</b> <em>user_detail</em>(req, name):
+        <b>return</b> <i>'Name is %s'</i> % name</pre>
+There are use filters define by regular expression from table
+Application.filters. This filter is use to transport to regular expression
+define by group. Default filter is <code>r'[^/]+'</code> with uni convert function. You
+can use any filter from table filters.
+<pre class="python">    <i># group regular expression with filter</i>
+<var>    @app.route</var>(<i>'/&lt;surname:word&gt;/&lt;age:int&gt;'</i>)
+    <b>def</b> <em>surnames_by_age</em>(req, surname, age):
+        <b>return</b> <i>'Surname is: %s and age is: %d'</i> % (surname, age)</pre>
+Filter int is define by <code>r'-?\d+'</code> with convert "function" int. So age must be
+number and the input parameter is int instance.<br><br>
+
+There are predefined filters, for example: <b>:int</b>, <b>:word</b>, <b>:re:</b> and <b>none</b>
+as default filter. Word is define as <code>r'\w+'</code> regular expression, and poorwsgi
+use re.U flag, so it match any Unicode string. That means UTF-8 string. For
+all filters see Application.filters property or <code>/debug-info</code> page.<br><br>
+
+You can get copy of filters table calling Application.filters property. And this
+filters table is output to debug-info page. Adding your own filter is possible
+with function set_filter with name, regular expression and convert function
+which is uni by default. Next you can use this filter in group regular
+expression.
+<pre class="python">    app.set_filter(<i>'email'</i>, r<i>'[a-zA-Z\.\-]+@[a-zA-Z\.\-]+'</i>, <kbd>str</kbd>)
+<var>
+    @app.route</var>(<i>'/user/&lt;login:email&gt;'</i>)
+    <b>def</b> <em>user_by_login</em>(req, login):
+        <b>return</b> <i>'Users email is %s'</i> % login</pre>
+In other way, you can use filters define by inline regular expression. That is
+<code>:re:</code> filter. This filter have regular expression which you write in, and
+allways uni convert function, so parametr is allways unicode.
+<pre class="python"><var>    @app.route</var>(<i>'/&lt;number:re:[a-fA-F\d]+&gt;'</i>)
+    <b>def</b> <em>hex_number</em>(req, number):
+        <b>return</b> <i>'Number is %s that is %d so %x'</i> % (number, <kbd>int</kbd>(number,<u>16</u>), <kbd>int</kbd>(number,<u>16</u>))</pre><a name="regular-expression-group-naming"></a><h4>Regular expression group naming<span class="links"><a href="#regular-expression-group-naming">link</a> | <a href="#">top</a></span></h4>
+Group names <b>must be unique</b>. They are store in ordered dictionary, to do wrap
+by their convert functions. You can named them in route definition how you can,
+and they can't be named same in handler parameters, but they must be only in the
+same ordering. Be careful to named parameters in handler with some python
+keyword, like class for example. If you can, you can use python "varargs" syntax
+to get any count of parameters in your handler function.
+<pre class="python"><var>    @app.route</var>(<i>'/test/&lt;variable0&gt;/&lt;variable1&gt;/&lt;variable2&gt;'</i>)
+    <b>def</b> <em>test_varargs</em>(req, *args):
+        <b>return</b> <i>"Parse %d parameters %s"</i> % (<kbd>len</kbd>(args), <kbd>str</kbd>(args))</pre>
+At last future of group regular expression routes is direct access to dictionary
+with req.groups variable. This variable is set from any regular expression
+route.
+<pre class="python"><var>    @app.route</var>(<i>'/test/&lt;variable0&gt;/&lt;variable1&gt;/&lt;variable2&gt;'</i>)
+    <b>def</b> <em>test_varargs</em>(req, *args):
+        <b>return</b> <i>"All input variables from url path: %s"</i> % <kbd>str</kbd>(req.groups)</pre><a name="default-and-http-state-handler"></a><h3>Default and http state handler<span class="links"><a href="#default-and-http-state-handler">link</a> | <a href="#">top</a></span></h3>
+If no route is match, there are two ways which could occur. First is call
+default handler if method match of course. Default handler is set with default
+decorator or set_default method. Parameter is only method which is default in
+METHOD_HEAD | METHOD_GET too. Instead of route handlers, when method does not
+match, 404 error was returned.
+<pre class="python"><var>    @app.default</var>():
+    <b>def</b> <em>default</em>(req):
+        <b>return</b> <i>'this is default handler'</i></pre>
+Of course, before calling default handler or 404 state handler, if is
+poor_DocumentRoot set, poor WSGI try to find file which match uri path.<br><br>
+
+Second way how to handle 404 http state is handle http state. For this, there
+are http_state decorator and set_http_state method. Like as route, functions
+get code and method, but method is default in state <code>METHOD_HEAD | METHOD_GET
+| METHOD_POST</code>. You can handle all http states instead of HTTP_OK. If you do
+not handle some http state, Poor WSGI have its default handler, which is
+internal_server_error, forbidden, not_found, method_not_allowed and
+not_implemented.<br><br>
+
+When you create your http state (error) pages, don't forget to set right
+status, which is set like in mod_python with set status attribute of Request
+object.
+<pre class="python"><var>    @app.http_state</var>(state.HTTP_NOT_FOUND)
+    <b>def</b> <em>page_not_found</em>(req):
+        req.state = state.HTTP_NOT_FOUND
+        req.write(<i>'Your request %s not found.'</i> % req.uri)
+        <b>return</b> state.DONE</pre>
+If your http state (error) handler was crashed with error, internal server
+error was return and right handler is called. If this your handler was crashed
+too, default poor WSGI internal server error handler is called.<a name="pre-and-post-process-functions"></a><h4>Pre and Post process functions<span class="links"><a href="#pre-and-post-process-functions">link</a> | <a href="#">top</a></span></h4>
+There are too special list of handlers. First is iter and call before each
+request. You can add function with pre_process decorator or add_pre_process
+method. Functions are called in order how is add to list. They don't return
+anything, resp. their return values are ignored. If they crash with error,
+internal_server_error was return and http state handler was called.<br><br>
+
+Second list contains functions, which is called after each request. If they
+crash with error, internal_server_error was return and http state handler is
+called, but all code from pre_process and from route handler is called, and
+may be, it could send output to WSGI server, if content is bigger then
+poor_BufferSize.
+<pre class="python"><var>    @app.pre_process</var>()
+    <b>def</b> <em>before_each_request</em>(req):
+        ...
+<var>
+    @app.pre_process</var>()
+    <b>def</b> <em>after_each_request</em>(req):
+        ...</pre>
+You can use standard methods of app object, add_pre_process and
+add_post_process too.<a name="request-variables"></a><h3>Request variables<span class="links"><a href="#request-variables">link</a> | <a href="#">top</a></span></h3>
+PoorWSGI has two extra classes for get arguments. From request uri, typical
+for GET method and from request body, typical for POST method.ore details. If
+this automatic parsing is disabled, a EmptyForm class is use.<a name="application.auto_args"></a><h4>Application.auto_args<span class="links"><a href="#application.auto_args">link</a> | <a href="#">top</a></span></h4>
+If auto_args is set to <code>True</code>, which is default, Request object parse input
+arguments from request uri at initialisation. There will be <code>args</code> variable in
+Request object, which is instance of Args class. If you want to off this
+functionality, set this property to <code>False</code>.<a name="application.auto_form"></a><h4>Application.auto_form<span class="links"><a href="#application.auto_form">link</a> | <a href="#">top</a></span></h4>
+If auto_form is set to <code>True</code>, which is default, Request object parse input
+arguments from request body at initialisation when request type is POST, PUT
+or PATCH. There will be <code>form</code> variable which is instance of FieldStorage class.
+If you want to off this functionality, set this property to <code>False</code>.<br><br>
+
+You must do it, if you want to set your own file_callback for FieldStorage.<a name="application.auto_json"></a><h4>Application.auto_json<span class="links"><a href="#application.auto_json">link</a> | <a href="#">top</a></span></h4>
+If it is True (default), method is POST, PUT or PATCH and requset content type
+is application/json, than Request object do automatic parsing request body to
+json dict variable.<a name="application.keep_blank_values"></a><h4>Application.keep_blank_values<span class="links"><a href="#application.keep_blank_values">link</a> | <a href="#">top</a></span></h4>
+This property is set for input parameters to automatically calling Args and
+FieldStorage classes, when auto_args resp. auto_form is set. By default this
+property is set to <code>0</code>. If it set to <code>1</code>, blank values should be interpret as
+empty strings.<a name="application.strict_parsing"></a><h4>Application.strict_parsing<span class="links"><a href="#application.strict_parsing">link</a> | <a href="#">top</a></span></h4>
+This property is set for input parameter to automatically calling Args and
+FieldStorage classes. when auto_args resp. auto_form is set. By default this
+variable is set to <code>0</code>. If is set to <code>1</code>, ValueError exception
+could raise on parsing error. I'm sure, that you never want to set this
+variable to <code>1</code>. If so, use it in your own parsing.
+<pre class="python">    app.auto_form = <kbd>False</kbd>
+    app.auto_args = <kbd>False</kbd>
+    app.strict_parsing = <u>1</u>
+<var>
+    @app.pre_process</var>()
+    <b>def</b> <em>auto_form_and_args</em>(req):
+        <i>""</i><i>" This is own implementation of req.form and req.args paring "</i><i>""</i>
+
+        <b>try</b>:
+            req.args = request.Args(req,
+                                    keep_blank_values=app.keep_blank_values,
+                                    strict_parsing=app.strict_parsing)
+        <b>except</b> <kbd>Exception</kbd> <b>as</b> e:
+            req.log_error(<i>"Bad request uri: %s"</i>, e)
+
+        <b>if</b> req.method_number == state.METHOD_POST:
+            <b>try</b>:
+                req.form = request.FieldStorage(
+                    req,
+                    keep_blank_values=app.keep_blank_values,
+                    strict_parsing=app.strict_parsing)
+            <b>except</b> <kbd>Exception</kbd> <b>as</b> e:
+                req.log_error(<i>"Bad request body: %s"</i>, e)</pre><a name="automatic-convert-to-unicode"></a><h4>Automatic convert to unicode<span class="links"><a href="#automatic-convert-to-unicode">link</a> | <a href="#">top</a></span></h4>
+As variables from uri, gets with group regular expression routes, which must
+be in unicode to right working regular expression, all other input variables
+are convert to unicode by default. You can call get method on each class with
+your convert function of course. If you want to use internal convert function,
+its name is uni. Uni is function define in depend on python version. If python
+2.x is use, uni encode unicode from utf-8. If python 3.x is use, default new
+str class is use.<a name="request-uri-arguments"></a><h4>Request uri arguments<span class="links"><a href="#request-uri-arguments">link</a> | <a href="#">top</a></span></h4>
+Request uri arguments are stored to Args class, define in poorwsgi.request
+module. Args is dict base class, with interface compatible methods getfirst
+and getlist. You can access to variables with args parameters at all time when
+poor_AutoArgs is set to On, which is default.
+<pre class="python"><var>    @app.route</var>(<i>'/test/get'</i>)
+    <b>def</b> <em>test_get</em>(req)
+        name = req.args.getfirst(<i>'name'</i>)
+        colors = req.args.getlist(<i>'color'</i>, fce=<kbd>int</kbd>)
+        <b>return</b> <i>"Get arguments are %s"</i> % uni(req.args)</pre>
+If no arguments are parsed, or if poor_AutoArgs is set to Off, req.args is
+EmptyForm instance, which is dict base class too with both of methods.<a name="request-body-arguments"></a><h4>Request body arguments<span class="links"><a href="#request-body-arguments">link</a> | <a href="#">top</a></span></h4>
+Request body areguments are stored to FieldStorage class, define in
+poorwsgi.request module.. This class is based on FieldStorage from standard
+cgi module. And variables are parsed every time, when poor_AutoForm is set to
+On, which is default and request method is POST, PUT or PATCH. You can call it
+on any other methods of course, but it must exist wsgi.input in request
+environment from wsgi server.<br><br>
+
+req.form instance is create with poor_KeepBlankValues and poor_StrictParsing
+variables as Args class is create, but FieldStorage have file_callback
+variable, which is configurable by XXX.
+<pre class="python"><var>    @app.route</var>(<i>'/test/post'</i>, methods = state.METHOD_GET_POST)
+    <b>def</b> <em>test_post</em>(req)
+        <kbd>id</kbd> = req.args.getfirst(<i>'id'</i>, <u>0</u>, <kbd>int</kbd>) <i># id is get from request uri and it</i>
+                                             <i># is convert to number with zero</i>
+                                             <i># as default</i>
+        name = req.form.getfirst(<i>'name'</i>)
+        colors = req.form.getlist(<i>'color'</i>, fce=<kbd>int</kbd>)
+        <b>return</b> <i>"Post arguments for id are %s"</i> % (<kbd>id</kbd>, uni(req.args))</pre>
+As like Args class, if poor_AutoForm is set to Off, or if method is no POST,
+PUT or PATCH, req.form is EmptyForm is instance instead of FieldStorage.<a name="json-request"></a><h4>JSON request<span class="links"><a href="#json-request">link</a> | <a href="#">top</a></span></h4>
+In the first place JSON request are from AJAX. There are automatic JSON
+parsing in Request object, which parse request body to JSON variable. This
+parsing starts only when Application.auto_json variable is set to True (default)
+and if content type of POST, PUT or PATCH request is application/json.
+Then request body is parsed to json property.
+<pre class="python">    <b>import</b> json
+<var>
+    @app.route</var>(<i>'/test/json'</i>,
+               methods=state.METHOD_POST | state.METHOD_PUT | state.METHOD_PATCH)
+    <b>def</b> <em>test_json</em>(req):
+        <b>for</b> key, val <tt>in</tt> req.json.items():
+            req.error_log(<i>'%s: %v'</i> % (key, <kbd>str</kbd>(val)))
+
+        req.content_type = <i>'application/json'</i>
+        <b>return</b> json.dumps({<i>'Status'</i>: <i>'200'</i>, <i>'Message'</i>: <i>'Ok'</i>})</pre>
+JQuery AJAX request could look like this:
+<pre class="python">    $.ajax({ url: <i>'/test/json'</i>,
+             <kbd>type</kbd>: <i>'put'</i>,
+             accepts : {json: <i>'application/json'</i>, html: <i>'text/html'</i>},
+             contentType: <i>'application/json'</i>,
+             dataType: <i>'json'</i>,
+             data: JSON.stringify({ test: <i>'Test message'</i>, <i>'count'</i>: <u>42</u>, <i>'note'</i>: null }),
+             success: function(data){
+                console.log(data);
+             },
+             error: function(xhr, status, http_status){
+                    console.error(status);
+                    console.error(http_status);
+             }
+    });</pre><a name="file-uploading"></a><h4>File uploading<span class="links"><a href="#file-uploading">link</a> | <a href="#">top</a></span></h4>
+By default, pythons FieldStorage, so poorwsgi.FieldStorage too, store files
+somewhere to /tmp dictionary. This works in FieldStorage, which calls
+TemporaryFile. Uploaded files are accessible like another form variables, but.<br><br>
+
+Any variables from FieldStorage is accessible with __getitem__ method. So you
+can get variable by <code>req.form[key]</code>, which gets FieldStorage instance. This
+instance have some another variables, which you can test, what type of
+variable is.
+<pre class="python"><var>    @app.route</var>(<i>'/test/upload'</i>, methods = state.METHOD_GET_POST)
+    <b>def</b> <em>test_upload</em>(req):
+        <i># store file from upload variable to my_file_storage file</i>
+        <b>if</b> <i>'upload'</i> <tt>in</tt> req.form <tt>and</tt> req.form[<i>'upload'</i>].filename:
+            <b>with</b> <kbd>open</kbd>(<i>'my_file_storage'</i>, <i>'w+b'</i>) <b>as</b> f:
+                f.write(req.form[<i>'upload'</i>].file.read())</pre><a name="your-own-file-callback"></a><h4>Your own file callback<span class="links"><a href="#your-own-file-callback">link</a> | <a href="#">top</a></span></h4>
+Sometimes, you want to use your own file_callback, because you don't want to
+use TemporaryFile as storage for this upload files. You can do it with simple
+adding <code>file</code> class. But if you want to do in Python 3.x, you must add
+io.FileIO class, cause file class not exist in Python 3.x.
+<pre class="python">    <b>from</b> poorwsgi <b>import</b> Application, state, request
+    <b>from</b> sys <b>import</b> version_info
+
+    <b>if</b> version_info.major &gt;= <u>3</u>:
+        <b>from</b> io <b>import</b> FileIO
+        file = FileIO
+
+    app = Application(<i>'test'</i>)
+
+    app.auto_form = <kbd>False</kbd>   <i># disable automatic request body parsing - IMPORTANT !</i>
+<var>
+    @app.pre_process</var>()
+    <b>def</b> <em>auto_form</em>(req):
+        <b>if</b> req.method_number == state.METHOD_POST:
+            <i># store upload files permanently with their right file names</i>
+            req.form = request.FieldStorage(
+                req,
+                keep_blank_values=app.keep_blank_values,
+                strict_parsing=app.strict_parsing,
+                file_callback=file)</pre>
+As you can see, this example works, but it is so bad solution of your problem.
+Little bit better solution will be, if you store files only if exist and only
+to special separate dictionary, which could be configurable. That you need use
+factory to create file_callback.
+<pre class="python">    <b>from</b> poorwsgi <b>import</b> Application, state, request
+    <b>from</b> sys <b>import</b> version_info
+
+    <b>if</b> version_info.major &gt;= <u>3</u>:
+        <b>from</b> io <b>import</b> FileIO
+        file = FileIO
+
+    app = Application(<i>'test'</i>)
+
+    <b>class</b> <em>Storage</em>(file):
+        <b>def</b> <em>__init__</em>(self, directory, filename):
+            self.path = directory + <i>'/'</i> + filename
+            <b>if</b> os.access(self.path, os.F_OK):
+                <b>raise</b> <kbd>Exception</kbd>(<i>"File %s exist yet"</i> % filename)
+            <kbd>super</kbd>(Storage, self).__init__(self.path, <i>'w+b'</i>)
+
+    <b>class</b> <em>StorageFactory</em>:
+        <b>def</b> <em>__init__</em>(self, directory):
+            self.directory = directory
+            <b>if</b> <tt>not</tt> os.access(directory, os.R_OK):
+                os.mkdir(directory)
+
+        <b>def</b> <em>create</em>(self, filename):
+            <b>return</b> Storage(self.directory, filename)
+
+    app.auto_form = <kbd>False</kbd>   <i># disable automatic request body parsing - IMPORTANT !</i>
+<var>
+    @app.pre_process</var>()
+    <b>def</b> <em>auto_form</em>(req):
+        <i>""</i><i>" Own implementation of req.form paring before any POST request
+            with own file_callback.
+        "</i><i>""</i>
+        <b>if</b> req.method_number == state.METHOD_POST:
+            factory = StorageFactory(<i>'./upload'</i>)
+            <b>try</b>:
+                req.form = request.FieldStorage(
+                    req,
+                    keep_blank_values=app.keep_blank_values,
+                    strict_parsing=app.strict_parsing,
+                    file_callback=factory.create)
+            <b>except</b> <kbd>Exception</kbd> <b>as</b> e:
+                req.log_error(e)</pre><a name="application-/-user-options"></a><h4>Application / User options<span class="links"><a href="#application-/-user-options">link</a> | <a href="#">top</a></span></h4>
+Like in mod_python Request, Poor WSGI Request have get_options method too.
+This method return dictionary of application options or variables, which start
+with <code>app_</code> prefix. This prefix is cut from options names.
+<pre class="ini">
+<b>    [uwsgi]</b>                                         <i># uwsgi config example</i>
+    ...
+<u>    env</u> = app_db_file = mywebapp.db                 <i># variable is db_file</i>
+<u>    env</u> = app_tmp_path = tmp                        <i># variable is tmp_path</i>
+<u>    env</u> = app_templ = templ                         <i># variable is templ</i></pre>
+And you can get these variables with get_options method:
+<pre class="python">    config = <kbd>None</kbd>
+<var>
+    @app.pre_process</var>()
+    <b>def</b> <em>load_options</em>(req):
+        <b>global</b> config
+
+        <b>if</b> config <tt>is</tt> <kbd>None</kbd>:
+            config = req.get_options()
+
+        req.config = config
+<var>
+    @app.route</var>(<i>'/options'</i>)
+    <b>def</b> <em>list_options</em>(req):
+        <b>for</b> key, val <tt>in</tt> req.config.items():
+            req.write(key + <i>'\t: '</i>+ val)</pre>
+Output of application url /options looks like:
+<pre class="text">
+    db_file   : mywebapp.db
+    tmp_path  : tmp
+    templ     : templ</pre>
+As you can see, you can store your variables to request object. There are few
+reserved variables for you, which poorwsgi never use, and which are None by
+default:<br>
+<code class="param">req.config </code>- for your config object<br>
+<code class="param">req.logger </code>- for your special logger object or logger function<br>
+<code class="param">req.user   </code>- for user object, who is login<br>
+<code class="param">req.app_   </code>- as prefix for any your application variable<br><br>
+
+So if you want to add any other variable, be careful to named it.
+<pre class="python">    <b>from</b> time <b>import</b> ctime
+
+    log = <kbd>open</kbd>(<i>'app.log'</i>, <i>'w+'</i>)
+    <b>def</b> <em>my_logger</em>(msg)
+         log.write(ctime() + <i>': '</i> + msg + <i>'\n'</i>)
+<var>
+    @app.pre_process</var>()
+    <b>def</b> <em>set_logger</em>(req):
+        req.logger = my_logger
+<var>
+    @app.route</var>(<i>'/test'</i>)
+    <b>def</b> <em>test</em>(req):
+        req.logger(<i>'test call'</i>)
+        ...
+</pre><a name="headers-and-sessions"></a><h3>Headers and Sessions<span class="links"><a href="#headers-and-sessions">link</a> | <a href="#">top</a></span></h3>
+<a name="headers"></a><h4>Headers<span class="links"><a href="#headers">link</a> | <a href="#">top</a></span></h4>
+We talk about headers in a few paragraph before. Now is time to more
+information about that. Request object have headers_in attribute, which is
+instance of wshiref.headers.Headers. This headers contains request headers
+from client like in mod_python. You can read it as you can.<br><br>
+
+Next to it, there are two output attributes headers_out and err_headers_out.
+Both of that are instance of Headers class from request module. The Headers
+class is child of wsgiref.headers.Headers class with little additional. By
+default there is <code>X-Powered-By</code> header set to "Poor WSGI for Python" and
+add method raise exception if you try to set more same keys without
+<code>Set-Cookie</code>.<br><br>
+
+Different before headers_out and err_headers_out is, that err_headers_out is
+use in internal http state handlers like in mod_python.
+<pre class="python"><var>    @app.route</var>(<i>'/some/uri'</i>)
+    <b>def</b> <em>some_uri</em>(req):
+        xparam = <kbd>int</kbd>(req.headers_in.get(<i>'X-Param'</i>, <i>'0'</i>))
+        req.headers_out.add(<i>'My-Param'</i>, xparam * <u>2</u>)
+        ...</pre><a name="sessions"></a><h4>Sessions<span class="links"><a href="#sessions">link</a> | <a href="#">top</a></span></h4>
+Like in mod_python, in poor WSGI is session class PoorSession. It is
+self-contained cookie which have data dictionary. Data are sent to client in
+hidden, bzip2ed, base64 encoded format. In read this session, expires value
+are check from data, so client can't change it in simple way. That is
+important to right set poor_SecretKey variable which is used in class by
+hidden function.
+<pre class="python">    <b>from</b> poorwsgi <b>import</b> Application, state, redirect
+    <b>from</b> poorwsgi.session <b>import</b> PoorSession
+    <b>from</b> os <b>import</b> urandom
+
+    app = Application(<i>'test'</i>)
+    app.secret_key = urandom(<u>32</u>)                    <i># random secret_key</i>
+
+    <b>def</b> <em>check_login</em>(fn):
+        <b>def</b> <em>handler</em>(req):
+            cookie = PoorSession(req)
+            <b>if</b> <i>'passwd'</i> <tt>not</tt> <tt>in</tt> cookie.data:         <i># expires or didn't set</i>
+                req.log_error(<i>'Login cookie not found.'</i>, state.LOG_INFO)
+                redirect(req, <i>'/login'</i>, text=<i>'Login required'</i>)
+            <b>return</b> fn(req)
+        <b>return</b> handler
+<var>
+    @app.route</var>(<i>'/login'</i>, method = state.METHOD_GET_POST)
+    <b>def</b> <em>login</em>(req):
+        <b>if</b> req.method == <i>'POST'</i>:
+            passwd = req.form.getfirst(<i>'passwd'</i>, fce=<kbd>str</kbd>)
+            <b>if</b> passwd != <i>'SecretPasswds'</i>:
+                req.log_error(<i>'Bad password'</i>, state.LOG_INFO)
+                redirect(req, <i>'/login'</i>, text=<i>'Bad password'</i>)
+
+            cookie = PoorSession(req)
+            cookie.data[<i>'passwd'</i>] = passwd
+            cookie.header(req, req.headers_out)
+            redirect(req, <i>'/private/uri'</i>)
+
+        <b>return</b> <i>'some html login form'</i>
+<var>
+
+    @app.route</var>(<i>'/private/uri'</i>)
+<var>    @check_login</var>
+    <b>def</b> <em>private_uri</em>(req):
+        <b>return</b> <i>'Some private data'</i>
+<var>
+
+    @app.route</var>(<i>'/logout'</i>)
+    <b>def</b> <em>logout</em>(req):
+        cookie = PoorSession(req)
+        cookie.destroy()
+        cookie.header(req, req.headers_out)
+        redirect(req, <i>'/login'</i>)
+</pre><a name="debugging"></a><h2>Debugging<span class="links"><a href="#debugging">link</a> | <a href="#">top</a></span></h2>
+Poor WSGI have few debugging mechanism which you can to use. First, it could
+be good idea to set up poor_Debug variable. If this variable is set, there are
+full traceback on error page internal_server_error with http code 500.<br><br>
+
+Second property of this variable is enabling special debug page on
+<code>/debug-info</code>
+url. On this page, you can found:<br>
+<code class="param">* </code>full handlers table with requests, http methods and handlers which are<br>
+<code class="param">  </code>call to serve this requests.<br>
+<code class="param">* </code>http state handlers table with http state codes, http methods and handlers<br>
+<code class="param">  </code>which are call when this http state is returned.<br>
+<code class="param">* </code>request headers table from your browser when you call this debug request<br>
+<code class="param">* </code>poor request variables, which are setting of actual instance of Poor WSGI<br>
+<code class="param">  </code>configuration variables.<br>
+<code class="param">* </code>application variables which are set like a connector variables but with<br>
+<code class="param">  </code>app_ prefix.<br>
+<code class="param">* </code>request environment, which is set from your wsgi server to wsgi<br>
+<code class="param">  </code>application, so to Poor WSGI connector.<a name="profiling"></a><h3>Profiling<span class="links"><a href="#profiling">link</a> | <a href="#">top</a></span></h3>
+If you want to profile your request code, you can do with profiler. Poor WSGI
+application object have methods to set profiling. You must only prepare runctx
+function, which is call before all your request. From each your request will
+be generate .profile dump file, which you can study.<br><br>
+
+If you want to profile all process after start your application, you can make
+file, which profile importing your application, which import Poor WSGI
+connector.
+<pre class="python">    <b>import</b> cProfile
+
+    <i># this import your application, which import Poor WSGI, so you can profile</i>
+    <i># first server init, which is do, when server import your application.</i>
+    <i># don'ŧ forget to import this file instead of simple.py or your</i>
+    <i># application file</i>
+    cProfile.runctx(<i>'from simple import *'</i>, <kbd>globals</kbd>(), <kbd>locals</kbd>(), filename=<i>"log/init.profile"</i>)
+
+    <i># and this sets profiling of any request which is server by your</i>
+    <i># web application</i>
+    app.set_profile(cProfile.runctx, <i>'log/req'</i>)</pre>
+When you use this file instead of your application file, simple.py for
+example, application create files in log directory. First file will be
+init.profile from first import by WSGI server. Other files will look like
+req_.profile, req_debug-info.profile etc. Second parameter of set_profile
+method is prefix of output file names. File name are create from url path, so
+each url create file.<br><br>
+
+There is nice tool to view this profile files runsnakerun. You can download
+from http:<i>/www.vrplumber.com/programming/runsnakerun</i>. Use that is very
+simple just open profile file:
+<pre class="text">
+    $~ python runsnake.py log/init.profile
+    $~ python runsnake.py log/req_.profile
+</pre><a name="few-word-at-the-end"></a><h2>Few word at the end<span class="links"><a href="#few-word-at-the-end">link</a> | <a href="#">top</a></span></h2>
+Once upon a time, there was a King. Ok there was a Prince. Oh, may by, there
+was not a prince, but probably, there was a Programmer, hmm ok, programmer.
+And this programmer know apaches mod_python. Yes it was very very bad paragon,
+but before python, he was programing in php. So mod_python was be big movement
+to right direction at that times.<br><br>
+
+He was founding how he can write, and host on server python applications. And as
+he know some close-source framework, which works right, he write some another,
+similar for his use. That is base of Poor Publisher. But WGSI was coming so he
+had idea, to write some new backend for his applications. That is base of Poor
+HTTP and Poor WSGI.<br><br>
+
+Some times, Poor HTTP and Poor WSGI was one project. It is better way, but
+that's not right way. After some time, he divide these too projects to Poor WSGI
+and Poor HTTP projects. But there is bad concept in Poor WSGI framework, which
+is not framework in fact. So he look for another projects, and see how could be
+nice to create WSGI application for user. That is time when Poor WSGI is
+rewritten to library type code, and application is callable class with some nice
+route and other methods - decorators.<br><br>
+
+This is story of one programmer and his WSGI framework, which is not framework
+in fact, because, it knows only handle uri request with some mod_python
+compatibility layer. As you can see, there are some ways, how this project can
+go. It's author, programmer use it on his projects, and it would be so nice, if
+there are more programmers then he, which use this little project, let's call
+it WSGI connector.<br><br>
+
+If you have any questions, proposals, bug fixes, text corrections, or any
+other things, please send me email to <b>mcbig at zeropage.cz</b> or you can
+create issue on GutHub:
+<a href="https://github.com/PoorHttp/PoorWSGI/issues">https://github.com/PoorHttp/PoorWSGI/issues</a> Thank you so much.<a name="changelog"></a><h3>ChangeLog<span class="links"><a href="#changelog">link</a> | <a href="#">top</a></span></h3>
+For release history or difference of releases, you can use git diff, diff log,
+git2cl tool or you can see ChangeLog from source code or on git repository
+web. See:
+<pre class="python">    <a href="https://github.com/PoorHttp/PoorWSGI/blob/master/doc/ChangeLog">https://github.com/PoorHttp/PoorWSGI/blob/master/doc/ChangeLog</a></pre><a name="simple.py"></a><h3>Simple.py<span class="links"><a href="#simple.py">link</a> | <a href="#">top</a></span></h3>
+It is published simple.py application test file. You can download it, study it
+test or use it as you can. See:
+<pre class="python">    <a href="https://github.com/PoorHttp/PoorWSGI/blob/master/simple.py">https://github.com/PoorHttp/PoorWSGI/blob/master/simple.py</a></pre></div>
+    </div>
+      <div class="footer">
+        <div class="line"></div>
+        <div class="credit">
+            Create by Ondřej Tůma (<a href="http://ipv6.mcbig.cz">McBig</a>).
+            &copy; 2013. Generate by
+            <a href="http://poorhttp.zeropage.cz/jinja24doc.html">Jinja24doc</a>.
+        </div>
+      </div><!-- footer --!>
+    </div><!-- page --!>
+  </body>
+</html>
