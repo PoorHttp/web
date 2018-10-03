@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Poor WSGI homepage documentation">
+    <meta name="author" content="Ondřej Tůma McBig">
+
+    <title>Poor WSGI for Python</title>
+
+    <link href="style.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <div class="page">
+
+      <div class="header">
+        <h1>Poor WSGI for Python</h1>
+        <small>Light WSGI connector with uri routing support.</small>
+        <div class="pannel">
+          <menu class="main">
+            <span class="item ">
+                <a href="index.html" title="" >About</a></span>
+            <span class="item ">
+                <a href="install.html" title="" >Install &amp; Config</a></span>
+             <span class="item ">
+                <a href="documentation.html" title="" >Documentation</a></span>
+            <span class="item ">
+                <a href="api.html" title="" >Api Reference</a></span>
+            <span class="item ">
+                <a href="licence.html" title="">Licence</a></span>
+            <span class="item">
+                <a href="https://github.com/PoorHttp/PoorWSGI">GitHub</a></span>
+            <span class="item"
+                ><a href="https://pypi.python.org/pypi/PoorWSGI">PyPI</a></span>
+          </menu>        </div>      </div>
+
+
+      <menu class="sidebar">
+<h2><a href="#responses">Responses</a></h2>
+<h3><a href="#returning-values">Returning values</a></h3>
+<h3><a href="#returning-responses">Returning Responses</a></h3>
+<h3><a href="#stopping-handlers">Stopping handlers</a></h3>
+<h2><a href="#routing">Routing</a></h2>
+<h3><a href="#static-routing">Static Routing</a></h3>
+<h3><a href="#regular-expression-routes">Regular expression routes</a></h3>
+<h3><a href="#group-naming">Group naming</a></h3>
+<h2><a href="#other-handlers">Other handlers</a></h2>
+<h3><a href="#default-handler">Default handler</a></h3>
+<h3><a href="#http-state-handlers">HTTP state handlers</a></h3>
+<h3><a href="#before-and-after-request">Before and After request</a></h3>
+<h2><a href="#request-variables">Request variables</a></h2>
+<h3><a href="#query-arguments">Query arguments</a></h3>
+<h3><a href="#body-arguments">Body arguments</a></h3>
+<h3><a href="#json-request">JSON request</a></h3>
+<h3><a href="#file-uploading">File uploading</a></h3>
+<h3><a href="#own-file-callback">Own file callback</a></h3>
+<h3><a href="#proccess-variables">Proccess variables</a></h3>
+<h2><a href="#application-user-options">Application / User options</a></h2>
+<h2><a href="#headers-and-sessions">Headers and Sessions</a></h2>
+<h3><a href="#request-headers">Request Headers</a></h3>
+<h3><a href="#response-headers">Response Headers</a></h3>
+<h3><a href="#sessions">Sessions</a></h3>
+<h2><a href="#debugging">Debugging</a></h2>
+<h3><a href="#profiling">Profiling</a></h3>
+      </menu>
+
+    <div class="content">
+      <div>
+<a name="responses"></a><h2>Responses<span class="links"><a href="#responses">link</a> | <a href="#">top</a></span></h2>
+<p>The main goal of all WSGI middleware is return response corresponding to HTTP,
+resp. WSGI <a href="api.html#request" title="module">request</a>. Responding in PoorWSGI is just like other knows frameworks.</p>
+
+
+<a name="returning-values"></a><h3>Returning values<span class="links"><a href="#returning-values">link</a> | <a href="#">top</a></span></h3>
+
+<a name="just-value"></a><h4>Just value<span class="links"><a href="#just-value">link</a> | <a href="#">top</a></span></h4>
+<p>The easiest way is return string or bytes. String values are automatically
+convert to bytes, because it&apos;s WSGI internal. HTTP Response is 200 OK with
+<code>text/html; character=utf-8&quot;</code> content type and default X-Powered-By header.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/some/uri&apos;</i>)
+<b>def</b> <em>some_uri</em>(req):
+   <b>return</b> <i>&apos;This is content for some uri&apos;</i>
+</pre>
+<p>This examples returns the same values.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/other/uri&apos;</i>)
+<b>def</b> <em>some_uri</em>(req):
+   <b>return</b> <i>b</i><i>&apos;This is content for some uri&apos;</i>
+</pre>
+
+<a name="generator"></a><h4>Generator<span class="links"><a href="#generator">link</a> | <a href="#">top</a></span></h4>
+<p>Second way is return generator. You can return any iterable object, but it must
+be always as first parameter, resp. that can&apos;t be tuple!
+<em>See Returned parameters</em>. Generator must always return bytes!</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/list/of/bytes&apos;</i>)
+<b>def</b> <em>list_of_bytes</em>(req):
+    <b>return</b> [<i>b</i><i>&apos;Hello &apos;</i>,
+            <i>b</i><i>&apos;world!&apos;</i>]
+</pre>
+<p>Or you can return any function which is generator.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/generator/of/bytes&apos;</i>)
+<b>def</b> <em>generator_of_bytes</em>(req):
+    <b>def</b> <em>generator</em>():
+        <b>for</b> i <tt>in</tt> <kbd>range</kbd>(<u>10</u>):
+            <b>yield</b> <i>b</i><i>&apos;</i><i>%d</i><i> -&gt; </i><i>%x</i><i><b>\n</b></i><i>&apos;</i> % (i, i)
+    <b>return</b> generator()
+</pre>
+<p>Or the handler could be generator.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/generator/of/bytes&apos;</i>)
+<b>def</b> <em>generator_of_bytes</em>(req):
+    <b>for</b> i <tt>in</tt> <kbd>range</kbd>(<u>10</u>):
+        <b>yield</b> <i>b</i><i>&apos;</i><i>%d</i><i> -&gt; </i><i>%x</i><i><b>\n</b></i><i>&apos;</i> % (i, i)
+</pre>
+
+<a name="returned-parameters"></a><h4>Returned parameters<span class="links"><a href="#returned-parameters">link</a> | <a href="#">top</a></span></h4>
+<p>In fact, you can return more then one value. You can returned content type,
+headers and status code next parameters. Python return all parameters as one
+tuple. That is not need to append brackets around them.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/text/message&apos;</i>)
+<b>def</b> <em>text_message</em>(req):
+    <b>return</b> <i>&quot;Hello world!&quot;</i>, <i>&quot;text/plain&quot;</i>
+</pre>
+<p>The first argument can be still generator.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/generator/of/bytes&apos;</i>)
+<b>def</b> <em>generator_of_bytes</em>(req):
+    <b>def</b> <em>generator</em>():
+        <b>for</b> i <tt>in</tt> <kbd>range</kbd>(<u>10</u>):
+            <b>yield</b> <i>b</i><i>&apos;</i><i>%d</i><i> -&gt; </i><i>%x</i><i><b>\n</b></i><i>&apos;</i> % (i, i)
+    <b>return</b> generator(), <i>&quot;text/plain&quot;</i>, ()    <i># empty headers</i>
+</pre>
+<p>All values could looks like:</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/hello&apos;</i>)
+<b>def</b> <em>hello</em>(req):
+    <b>return</b> <i>&quot;Hello world!&quot;</i>, <i>&quot;text/plain&quot;</i>, (<i>&apos;X-Attribute&apos;</i>: <i>&apos;hello world&apos;</i>),
+           <a href="api.html#HTTP_OK" title="200">HTTP_OK</a>
+</pre>
+
+<a name="returning-responses"></a><h3>Returning Responses<span class="links"><a href="#returning-responses">link</a> | <a href="#">top</a></span></h3>
+
+<a name="make-response"></a><h4>make response<span class="links"><a href="#make-response">link</a> | <a href="#">top</a></span></h4>
+<p>Response are the base class fore returning values. In fact, from other values
+which are returned from <a href="api.html#request" title="module">request</a> handlers are converted to Response object, via
+make_response function.</p>
+
+<pre class="code python">
+<b>def</b> <em>make_response</em>(data, content_type=<i>&quot;text/html; character=utf-8&quot;</i>,
+                  headers=<kbd>None</kbd>, status_code=<a href="api.html#HTTP_OK" title="200">HTTP_OK</a>)
+</pre>
+<dl>
+<dt>data: <tt>str, bytes, generator</tt></dt>
+<dd><p>Returned value as response body.</p></dd>
+<dt>content_type: <tt>str</tt></dt>
+<dd><p>The <code>Content-Type</code> header which is set, if this header is not set
+in headers.</p></dd>
+<dt>headers: <tt><a href="api.html#Headers" title="class">Headers</a>, tuple, dict, ...</tt></dt>
+<dd><p>If is <a href="api.html#Headers" title="class">Headers</a> instance, that be set <em>(referer)</em>. Other types, are send
+to <a href="api.html#Headers" title="class">Headers</a> constructor.</p></dd>
+<dt>status_code: <tt>int</tt></dt>
+<dd><p>HTTP status code, <a href="api.html#HTTP_OK" title="200">HTTP_OK</a> is 200.</p></dd>
+</dl>
+<p>You can use headers instead of <cite>content_type</cite>  argument.</p>
+
+<pre class="code python">
+<var>@app.http_state</var>(NOT_FOUND)
+<b>def</b> <em><a href="api.html#not_found" title="(req)">not_found</a></em>(req):
+    <b>return</b> make_response(<i>b</i><i>&apos;Page not Found&apos;</i>,
+                         headers={<i>&quot;Content-Type&quot;</i>: <i>&quot;text/plain&quot;</i>},
+                         status_code=NOT_FOUND)
+</pre>
+
+<a name="response"></a><h4>Response<span class="links"><a href="#response">link</a> | <a href="#">top</a></span></h4>
+<p>Response object is one of base element of WSGI application. Response is object
+which have full data, to return valid HTTP answer to client. Status code,
+text reason of status code, headers and body. That&apos;s all. All values returned
+from handlers is transform to Response object if it is possible. If handlers
+return valid Response it will be returns.</p>
+
+<p>Response have some functionality, to be useful like write method, to appending
+to body with auto-counting <code>Content-Length</code>, or some headers additional work.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/teapot&apos;</i>)
+<b>def</b> <em>teapot</em>(req):
+    <b>return</b> Response(<i>&quot;I&apos;m teapot :-)&quot;</i>, content_type=<i>&quot;text/plain&quot;</i>,
+                    status_code=<u>418</u>)
+</pre>
+<p>There are some additional subclasses with special working.</p>
+
+<p><b>FileResponse</b></p>
+
+<p>File response open the file and send it throw <code><a href="api.html#wsgi" title="module">wsgi</a>.filewrapper</code>, which could
+be <em>sendfile()</em> call. See <a href="http://www.python.org/dev/peps/pep-3333/">PEP 3333</a>. Content type and length read from system.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/favicon.ico&apos;</i>)
+<b>def</b> <em>favicon</em>(req):
+    <b>return</b> FileResponse(<i>&quot;/favicon.ico&quot;</i>)
+</pre>
+<p><b>GeneratorResponse</b></p>
+
+<p>Response which is use for generator values. Generator <b>must</b> return bytes,
+instead of strings! For string returned generator, use <b>StrGeneratorResponse</b>,
+which use generator for utf-8 encoding to bytes.</p>
+
+<p><b>EmptyResponse</b></p>
+
+<p>Sometimes you don&apos;t want to response anything instead of status cod. Empty
+response only status code and reason. No headers, no content.</p>
+
+<p><b>RedirectResponse</b></p>
+
+<p>Response with interface for more comfortable redirect response.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&quot;/old/url&quot;</i>)
+<b>def</b> <em>old_url</em>(req):
+    <b>return</b> RedirectResponse(<i>&quot;/new/url&quot;</i>, <kbd>True</kbd>)
+</pre>
+
+<a name="stopping-handlers"></a><h3>Stopping handlers<span class="links"><a href="#stopping-handlers">link</a> | <a href="#">top</a></span></h3>
+
+<a name="httpexception"></a><h4>HTTPException<span class="links"><a href="#httpexception">link</a> | <a href="#">top</a></span></h4>
+<p>There is HTTPException class, based from Exception, which is used for stopping
+handler with right http status. There is possible two scenarios.</p>
+
+<p>You want to stop with specific HTTP status code, and handler from application
+was used to generate right response.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&quot;/some/url&quot;</i>)
+<b>def</b> <em>some_url</em>(req):
+    <b>if</b> req.is_xhr:
+        <b>raise</b> HTTPException(<a href="api.html#HTTP_BAD_REQUEST" title="400">HTTP_BAD_REQUEST</a>)
+    <b>return</b> <i>&quot;Some message&quot;</i>, <i>&quot;text/plain&quot;</i>
+</pre>
+<p>Or you would stop with specific response. Instead of status code, just use
+Response object.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&quot;/other/url&quot;</i>)
+<b>def</b> <em>some_url</em>(req):
+    <b>if</b> req.is_xhr:
+        error = Response(<i>b</i><i>&apos;{&quot;reason&quot;: &quot;Ajax not suported&quot;}&apos;</i>,
+                         content_type=<i>&quot;application/json&quot;</i>,
+                         status_code=<a href="api.html#HTTP_BAD_REQUEST" title="400">HTTP_BAD_REQUEST</a>)
+        <b>raise</b> HTTPException(error)
+    <b>return</b> <i>&quot;Other message&quot;</i>, <i>&quot;text/plain&quot;</i>
+</pre>
+<p><b>Additional functionality)</b></p>
+
+<p>If status code is <code><a href="api.html#DECLINED" title="0">DECLINED</a></code>, that return nothing. That means, that no status
+code, no headers, no response body. Just stop the <a href="api.html#request" title="module">request</a>.</p>
+
+<p>If status code is <code><a href="api.html#HTTP_OK" title="200">HTTP_OK</a></code>, that return EmptyResponse, so only status code
+and reason, but no headers or message body.</p>
+
+<p>WHen the handler raise any other exception, that generate Internal Server Error
+status code.</p>
+
+
+<a name="compatibility"></a><h4>Compatibility<span class="links"><a href="#compatibility">link</a> | <a href="#">top</a></span></h4>
+<p>For compatibility with old PoorWSGI and other WSGI middleware, there are two
+functions.</p>
+
+<p><b>redirect</b></p>
+
+<p>Have the same interface as RedirectResponse, and only raise the HTTPException
+with RedirectResponse.</p>
+
+<p><b>abort</b></p>
+
+<p>Have the same interface as HTTPException, and voila, it raise the HTTPException.</p>
+
+
+<a name="routing"></a><h2>Routing<span class="links"><a href="#routing">link</a> | <a href="#">top</a></span></h2>
+<p>There are too ways how to set uri handler. Via decorators of <a href="api.html#Application" title="class">Application</a> object,
+or method set_ where one of parameter is your handler. It is important how look
+your application. If your web project have one or a few files where your
+handlers are, it is good idea to use decorators. But if you have big project
+with more files, it could be difficult to load all files with decorated
+handlers. So that is right job for set_ <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> in one file, like a route file
+or dispatch table.</p>
+
+
+<a name="static-routing"></a><h3>Static Routing<span class="links"><a href="#static-routing">link</a> | <a href="#">top</a></span></h3>
+<p>There are method and decorator to set your function (handler) to response static
+route. <a href="api.html#Application.set_route" title="(self, uri, fn, method=3)">Application.set_route</a> and <a href="api.html#Application.route" title="(self, uri, method=3)">Application.route</a>. Both of them have tho
+parametrs, first the required uri like <code>/some/uri/for/you</code> and next method
+flags, which is default <a href="api.html#METHOD_HEAD" title="1">METHOD_HEAD</a> | <a href="api.html#METHOD_GET" title="2">METHOD_GET</a>. There are other <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>
+in <a href="api.html#state" title="module">state</a> module like <a href="api.html#METHOD_POST" title="4">METHOD_POST</a>, <a href="api.html#METHOD_PUT" title="8">METHOD_PUT</a> etc. There is two special constants
+<a href="api.html#METHOD_GET_POST" title="7">METHOD_GET_POST</a> which is HEAD | GET | POST, aned <a href="api.html#METHOD_ALL" title="511">METHOD_ALL</a> which is all
+supported <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>. If method not match, but uri is exist in internal table,
+http <a href="api.html#state" title="module">state</a> <a href="api.html#HTTP_METHOD_NOT_ALLOWED" title="405">HTTP_METHOD_NOT_ALLOWED</a> is return.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/some/uri&apos;</i>)
+<b>def</b> <em>some_uri</em>(req):
+    <b>return</b> <i>&apos;Data of some uri&apos;</i>
+
+<b>def</b> <em>other_uri</em>(req):
+    <b>return</b> <i>&apos;Data of other uri&apos;</i>
+app.set_route(<i>&apos;/some/other/uri&apos;</i>, other_uri, <a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_GET_POST" title="7">METHOD_GET_POST</a>)
+</pre>
+<p>You pop from application table via method <a href="api.html#Application.pop_route" title="(self, uri, method)">Application.pop_route</a>, or get internal
+table via <a href="api.html#Application.routes" title="(True, False, False)">Application.routes</a> property. <b>Each uri could have only one handler</b>,
+but one handler could be use for more uris.</p>
+
+
+<a name="regular-expression-routes"></a><h3>Regular expression routes<span class="links"><a href="#regular-expression-routes">link</a> | <a href="#">top</a></span></h3>
+<p>As in other <a href="api.html#wsgi" title="module">wsgi</a> connectors, or frameworks if you want, there are way how to
+define routes with getting part of url path as parameter of handler. PoorWSGI
+call them <b>regular expression routes</b>. You can use it in nice human-readable
+form or in your own regular expressions. Basic use is define by group name.</p>
+
+<pre class="code python">
+<i># group regular expression</i>
+<var>@app.route</var>(<i>&apos;/user/&lt;name&gt;&apos;</i>)
+<b>def</b> <em>user_detail</em>(req, name):
+    <b>return</b> <i>&apos;Name is </i><i>%s</i><i>&apos;</i> % name
+</pre>
+<p>There are use filters define by regular expression from table
+<a href="api.html#Application.filters" title="(True, False, False)">Application.filters</a>. This filter is use to transport to regular expression
+define by group. Default filter is <code>r&apos;[^/]+&apos;</code> with str convert function. You
+can use any filter from table filters.</p>
+
+<pre class="code python">
+<i># group regular expression with filter</i>
+<var>@app.route</var>(<i>&apos;/&lt;surname:word&gt;/&lt;age:int&gt;&apos;</i>)
+<b>def</b> <em>surnames_by_age</em>(req, surname, age):
+    <b>return</b> <i>&apos;Surname is: </i><i>%s</i><i> and age is: </i><i>%d</i><i>&apos;</i> % (surname, age)
+</pre>
+<p>Filter int is define by <code>r&apos;-?\d+&apos;</code> with convert &quot;function&quot; int. So age must be
+number and the input parameter is int instance.</p>
+
+<p>There are predefined filters, for example: <b>:int</b>, <b>:word</b>, <b>:re:</b> and
+<b>none</b> as default filter. Word is define as <code>r&apos;\w+&apos;</code> regular expression,
+and <a href="api.html#poorwsgi" title="module">poorwsgi</a> use re.U flag, so it match any Unicode string. That means UTF-8
+string. For all filters see <a href="api.html#Application.filters" title="(True, False, False)">Application.filters</a> property or <code>/debug-info</code> page.</p>
+
+<p>You can get copy of filters table calling <a href="api.html#Application.filters" title="(True, False, False)">Application.filters</a> property. And this
+filters table is output to debug-info page. Adding your own filter is possible
+with function set_filter with name, regular expression and convert function
+which is str by default. Next you can use this filter in group regular
+expression.</p>
+
+<pre class="code python">
+app.set_filter(<i>&apos;email&apos;</i>, <i>r</i><i>&apos;[a-zA-Z\.\-]+@[a-zA-Z\.\-]+&apos;</i>, <kbd>str</kbd>)
+
+<var>@app.route</var>(<i>&apos;/user/&lt;login:email&gt;&apos;</i>)
+<b>def</b> <em>user_by_login</em>(req, login):
+    <b>return</b> <i>&apos;Users email is </i><i>%s</i><i>&apos;</i> % login
+</pre>
+<p>In other way, you can use filters define by inline regular expression. That is
+<code>:re:</code> filter. This filter have regular expression which you write in, and
+allways str convert function, so parametr is allways string.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/&lt;number:re:[a-fA-F\d]+&gt;&apos;</i>)
+<b>def</b> <em>hex_number</em>(req, number):
+    <b>return</b> (<i>&apos;Number is </i><i>%s</i><i> that is </i><i>%d</i><i> so </i><i>%x</i><i>&apos;</i> %
+            (number, <kbd>int</kbd>(number,<u>16</u>), <kbd>int</kbd>(number,<u>16</u>)))
+</pre>
+
+<a name="group-naming"></a><h3>Group naming<span class="links"><a href="#group-naming">link</a> | <a href="#">top</a></span></h3>
+<p>Group names <b>must be unique</b> in defined path. They are store in ordered
+dictionary, to do wrap by their convert functions. You can named them in route
+definition how you can, and they can&apos;t be named same in handler parameters,
+but they must be only in the same ordering. Be careful to named parameters
+in handler with some python keyword, like class for example. If you can, you can
+use python &quot;varargs&quot; syntax to get any count of parameters in your handler
+function.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/test/&lt;variable0&gt;/&lt;variable1&gt;/&lt;variable2&gt;&apos;</i>)
+<b>def</b> <em>test_varargs</em>(req, *args):
+    <b>return</b> <i>&quot;Parse </i><i>%d</i><i> parameters </i><i>%s</i><i>&quot;</i> % (<kbd>len</kbd>(args), <kbd>str</kbd>(args))
+</pre>
+<p>At last future of regular expression routes is direct access to dictionary
+with req.groups variable. This variable is set from any regular expression
+route.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/test/&lt;variable0&gt;/&lt;variable1&gt;/&lt;variable2&gt;&apos;</i>)
+<b>def</b> <em>test_varargs</em>(req, *args):
+    <b>return</b> <i>&quot;All input variables from url path: </i><i>%s</i><i>&quot;</i> % <kbd>str</kbd>(req.groups)
+</pre>
+<p>Regular expression routes as like static routes could be set with
+<a href="api.html#Application.route" title="(self, uri, method=3)">Application.route</a> or <a href="api.html#Application.set_route" title="(self, uri, fn, method=3)">Application.set_route</a> <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>. But internaly
+<a href="api.html#Application.regular_route" title="(self, ruri, method=3)">Application.regular_route</a> or <a href="api.html#Application.set_regular_route" title="(self, r_uri, fn, method=3, convertors=(), rule=None)">Application.set_regular_route</a> is call.
+Same situation is with <a href="api.html#Application.pop_route" title="(self, uri, method)">Application.pop_route</a> and <a href="api.html#Application.pop_regular_route" title="(self, r_uri, method)">Application.pop_regular_route</a>.</p>
+
+
+<a name="other-handlers"></a><h2>Other handlers<span class="links"><a href="#other-handlers">link</a> | <a href="#">top</a></span></h2>
+
+<a name="default-handler"></a><h3>Default handler<span class="links"><a href="#default-handler">link</a> | <a href="#">top</a></span></h3>
+<p>If no route is match, there are two ways which could occur. First is call
+default handler if method match of course. Default handler is set with default
+<a href="api.html#Application" title="class">Application</a>.decorator or <a href="api.html#Application.set_default" title="(self, fn, method=3)">Application.set_default</a> method. Parameter is only
+method which is default in <a href="api.html#METHOD_HEAD" title="1">METHOD_HEAD</a> | <a href="api.html#METHOD_GET" title="2">METHOD_GET</a> too. Instead of route
+handlers, when method does not match, 404 error was returned.</p>
+
+<p>So default handler is fallback with <code>r&apos;/.*&apos;</code> regular expression. For example,
+you can use is for any OPTIONS method.</p>
+
+<pre class="code python">
+<var>@app.default</var>(<a href="api.html#METHOD_OPTIONS" title="64">METHOD_OPTIONS</a>):
+<b>def</b> <em>default</em>(req):
+    <b>return</b> <i>b</i><i>&apos;&apos;</i>, <i>&apos;&apos;</i>, {<i>&apos;Allow&apos;</i>: <i>&apos;OPTIONS&apos;</i>, <i>&apos;GET&apos;</i>, <i>&apos;HEAD&apos;</i>}
+</pre>
+<p>Be careful, default handler is call before 404 not found handler. When it is
+possible to serve <a href="api.html#request" title="module">request</a> any other way, it will. For example if
+poor_DocumentRoot is set and PoorWSGI found the file, that will be send.
+Of course, internal file or dictionary handler is use only with <a href="api.html#METHOD_GET" title="2">METHOD_GET</a>
+or <a href="api.html#METHOD_HEAD" title="1">METHOD_HEAD</a>.</p>
+
+
+<a name="http-state-handlers"></a><h3>HTTP <a href="api.html#state" title="module">state</a> handlers<span class="links"><a href="#http-state-handlers">link</a> | <a href="#">top</a></span></h3>
+<p>There are some predefined HTTP <a href="api.html#state" title="module">state</a> handlers, which is use when other
+HTTP <a href="api.html#state" title="module">state</a> are raised via HTTPException or any other exception which ends with
+<a href="api.html#HTTP_INTERNAL_SERVER_ERROR" title="500">HTTP_INTERNAL_SERVER_ERROR</a> status code.</p>
+
+<p>You can redefined your own handlers for any combination of status code and
+method type like routes handlers. Responsing from these handlers are same as in
+route handlers.</p>
+
+<pre class="code python">
+<var>@app.http_state</var>(<a href="api.html#state" title="module">state</a>.<a href="api.html#HTTP_NOT_FOUND" title="404">HTTP_NOT_FOUND</a>)
+<b>def</b> <em>page_not_found</em>(req):
+    <b>return</b> <i>&quot;Your <a href="api.html#request" title="module">request</a> </i><i>%s</i><i> not found.&quot;</i> % req.uri, <i>&quot;text/plain&quot;</i>
+</pre>
+<p>If your http <a href="api.html#state" title="module">state</a> (error) handler was crashed with error, internal server
+error was return and right handler is called. If this your handler was crashed
+too, default poor WSGI internal server error handler is called.</p>
+
+
+<a name="before-and-after-request"></a><h3>Before and After <a href="api.html#request" title="module">request</a><span class="links"><a href="#before-and-after-request">link</a> | <a href="#">top</a></span></h3>
+<p>PoorWSGI have too special list of handlers. First is iter and call before each
+<a href="api.html#request" title="module">request</a>. You can add function with <a href="api.html#Application.before_request" title="(self)">Application.before_request</a> and
+<a href="api.html#Application.after_request" title="(self)">Application.after_request</a> decorators or <a href="api.html#Application.add_after_request" title="(self, fn)">Application.add_after_request</a> and
+<a href="api.html#Application.add_after_request" title="(self, fn)">Application.add_after_request</a> <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>. And there are
+<a href="api.html#Application.pop_before_request" title="(self, fn)">Application.pop_before_request</a> and <a href="api.html#Application.pop_after_request" title="(self, fn)">Application.pop_after_request</a> <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>
+to remove handlers.</p>
+
+<p>Before <a href="api.html#request" title="module">request</a> handlers are called in order how was added to list. They don&apos;t
+return anything, resp. their return values are ignored. If they crash with
+error, <a href="api.html#internal_server_error" title="(req)">internal_server_error</a> was return and http <a href="api.html#state" title="module">state</a> handler was called.</p>
+
+<p>After <a href="api.html#request" title="module">request</a> handlers are called in order how was added to list. If they
+crash with error, <a href="api.html#internal_server_error" title="(req)">internal_server_error</a> was return and http <a href="api.html#state" title="module">state</a> handler is
+called, but all code from before <a href="api.html#request" title="module">request</a> list and from route handler was called.</p>
+
+<p>After <a href="api.html#request" title="module">request</a> handler is call even if error handler, <a href="api.html#internal_server_error" title="(req)">internal_server_error</a> for
+example was called.</p>
+
+<p>Before <a href="api.html#request" title="module">request</a> handler must have <a href="api.html#request" title="module">request</a> argument, but after <a href="api.html#request" title="module">request</a> handler
+must have <a href="api.html#request" title="module">request</a> and response argument.</p>
+
+<pre class="code python">
+<var>@app.before_request</var>()
+<b>def</b> <em>before_each_request</em>(<a href="api.html#request" title="module">request</a>):
+    ...
+
+<var>@app.after_request</var>()
+<b>def</b> <em>after_each_request</em>(<a href="api.html#request" title="module">request</a>, response):
+    ...
+</pre>
+
+<a name="filtering"></a><h4>Filtering<span class="links"><a href="#filtering">link</a> | <a href="#">top</a></span></h4>
+<p>TODO: How to write output filter, gzip for example....</p>
+
+
+<a name="request-variables"></a><h2><a href="api.html#Request" title="class">Request</a> variables<span class="links"><a href="#request-variables">link</a> | <a href="#">top</a></span></h2>
+<p>PoorWSGI has two extra classes for get arguments. From <a href="api.html#request" title="module">request</a> uri, typical
+for GET method and from <a href="api.html#request" title="module">request</a> body, typical for POST method. This parsing is
+enabled by default, but you can configure with options.</p>
+
+
+<a name="query-arguments"></a><h3>Query arguments<span class="links"><a href="#query-arguments">link</a> | <a href="#">top</a></span></h3>
+<p><a href="api.html#Request" title="class">Request</a> query arguments are stored to <a href="api.html#Args" title="class">Args</a> class, define in <a href="api.html#poorwsgi" title="module">poorwsgi</a>.<a href="api.html#request" title="module">request</a>
+module. <a href="api.html#Args" title="class">Args</a> is dict base class, with interface compatible <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> getfirst
+and getlist. You can access to variables with args parameters at all time when
+poor_AutoArgs is set to On, which is default.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/test/get&apos;</i>)
+<b>def</b> <em>test_get</em>(req)
+    name = req.args.getfirst(<i>&apos;name&apos;</i>)
+    colors = req.args.getlist(<i>&apos;color&apos;</i>, fce=<kbd>int</kbd>)
+    <b>return</b> <i>&quot;Get arguments are </i><i>%s</i><i>&quot;</i> % <kbd>str</kbd>(req.args)
+</pre>
+<p>If no arguments are parsed, or if poor_AutoArgs is set to Off, req.args is
+<a href="api.html#EmptyForm" title="class">EmptyForm</a> instance, which is dict base class too with both of <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>.</p>
+
+
+<a name="body-arguments"></a><h3>Body arguments<span class="links"><a href="#body-arguments">link</a> | <a href="#">top</a></span></h3>
+<p><a href="api.html#Request" title="class">Request</a> body areguments are stored to <a href="api.html#FieldStorage" title="class">FieldStorage</a> class, define in
+<a href="api.html#poorwsgi" title="module">poorwsgi</a>.<a href="api.html#request" title="module">request</a> module. This class is based on <a href="api.html#FieldStorage" title="class">FieldStorage</a> from standard
+cgi module. And variables are parsed every time, when poor_AutoForm is set to
+On, which is default and <a href="api.html#request" title="module">request</a> method is POST, PUT or PATCH. You can call it
+on any other <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> of course, but it must exist <a href="api.html#wsgi" title="module">wsgi</a>.input in <a href="api.html#request" title="module">request</a>
+environment from <a href="api.html#wsgi" title="module">wsgi</a> server.</p>
+
+<p>req.form instance is create with poor_KeepBlankValues and poor_StrictParsing
+variables as <a href="api.html#Args" title="class">Args</a> class is create, but <a href="api.html#FieldStorage" title="class">FieldStorage</a> have file_callback
+variable, which is configurable by <a href="api.html#Application.file_callback" title="(True, True, False)">Application.file_callback</a> property.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/test/post&apos;</i>, <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> = <a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_GET_POST" title="7">METHOD_GET_POST</a>)
+<b>def</b> <em>test_post</em>(req)
+    <kbd>id</kbd> = req.args.getfirst(<i>&apos;id&apos;</i>, <u>0</u>, <kbd>int</kbd>) <i># id is get from <a href="api.html#request" title="module">request</a> uri and it</i>
+                                         <i># is convert to number with zero</i>
+                                         <i># as default</i>
+    name = req.form.getfirst(<i>&apos;name&apos;</i>)
+    colors = req.form.getlist(<i>&apos;color&apos;</i>, fce=<kbd>int</kbd>)
+    <b>return</b> <i>&quot;Post arguments for id are </i><i>%s</i><i>&quot;</i> % (<kbd>id</kbd>, <kbd>str</kbd>(req.args))
+</pre>
+<p>As like <a href="api.html#Args" title="class">Args</a> class, if poor_AutoForm is set to Off, or if method is no POST,
+PUT or PATCH, req.form is <a href="api.html#EmptyForm" title="class">EmptyForm</a> is instance instead of <a href="api.html#FieldStorage" title="class">FieldStorage</a>.</p>
+
+<p>In fact, body arguments are parsed only when right type of <a href="api.html#request" title="module">request</a> is set,
+you can configure types via <a href="api.html#Application.form_mime_types" title="(True, False, False)">Application.form_mime_types</a> property, which
+is list of <a href="api.html#request" title="module">request</a> mime types.</p>
+
+
+<a name="json-request"></a><h3>JSON <a href="api.html#request" title="module">request</a><span class="links"><a href="#json-request">link</a> | <a href="#">top</a></span></h3>
+<p>In the first place JSON <a href="api.html#request" title="module">request</a> are from AJAX. There are automatic JSON
+parsing in <a href="api.html#Request" title="class">Request</a> object, which parse <a href="api.html#request" title="module">request</a> body to JSON variable. This
+parsing starts only when <a href="api.html#Application.auto_json" title="(True, True, False)">Application.auto_json</a> variable is set to True (default)
+and if mime type of POST, PUT or PATCH <a href="api.html#request" title="module">request</a> is application/json.
+Then <a href="api.html#request" title="module">request</a> body is parsed to json property. You can configure JSON types
+via <a href="api.html#Application.json_mime_types" title="(True, False, False)">Application.json_mime_types</a> property, which is list of <a href="api.html#request" title="module">request</a>
+mime types.</p>
+
+<pre class="code python">
+<b>import</b> json
+
+<var>@app.route</var>(<i>&apos;/test/json&apos;</i>,
+           <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a>=<a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_POST" title="4">METHOD_POST</a> | <a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_PUT" title="8">METHOD_PUT</a> | <a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_PATCH" title="256">METHOD_PATCH</a>)
+<b>def</b> <em>test_json</em>(req):
+    <b>for</b> key, val <tt>in</tt> req.json.items():
+        req.error_log(<i>&apos;</i><i>%s</i><i>: %v&apos;</i> % (key, <kbd>str</kbd>(val)))
+
+    res = Response(content_type=<i>&apos;application/json&apos;</i>)
+    json.dump(res, {<i>&apos;Status&apos;</i>: <i>&apos;200&apos;</i>, <i>&apos;Message&apos;</i>: <i>&apos;Ok&apos;</i>})
+    <b>return</b> res
+</pre>
+<p>JQuery AJAX <a href="api.html#request" title="module">request</a> could look like this:</p>
+
+<pre class="code js">
+$.ajax({ url: <i>&apos;/test/json&apos;</i>,
+         type: <i>&apos;put&apos;</i>,
+         accepts : {json: <i>&apos;application/json&apos;</i>, html: <i>&apos;text/html&apos;</i>},
+         contentType: <i>&apos;application/json&apos;</i>,
+         dataType: <i>&apos;json&apos;</i>,
+         data: JSON.stringify({<i>&apos;test&apos;</i>: <i>&apos;Test message&apos;</i>,
+                               <i>&apos;count&apos;</i>: <u>42</u>, <i>&apos;note&apos;</i>: <b>null</b>}),
+         success: <b>function</b>(data){
+            console.<a href="api.html#log" title="submodule">log</a>(data);
+         },
+         error: <b>function</b>(xhr, status, http_status){
+                console.error(status);
+                console.error(http_status);
+         }
+});
+</pre>
+
+<a name="file-uploading"></a><h3>File uploading<span class="links"><a href="#file-uploading">link</a> | <a href="#">top</a></span></h3>
+<p>By default, pythons <a href="api.html#FieldStorage" title="class">FieldStorage</a>, so <a href="api.html#poorwsgi" title="module">poorwsgi</a>.<a href="api.html#FieldStorage" title="class">FieldStorage</a> too, store files
+somewhere to /tmp dictionary. This works in <a href="api.html#FieldStorage" title="class">FieldStorage</a>, which calls
+TemporaryFile. Uploaded files are accessible like another form variables, but.</p>
+
+<p>Any variables from <a href="api.html#FieldStorage" title="class">FieldStorage</a> is accessible with __getitem__ method. So you
+can get variable by {req.form[key]}, which gets <a href="api.html#FieldStorage" title="class">FieldStorage</a> instance. This
+instance have some another variables, which you can test, what type of
+variable is.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/test/upload&apos;</i>, <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> = <a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_GET_POST" title="7">METHOD_GET_POST</a>)
+<b>def</b> <em>test_upload</em>(req):
+    <i># store file from upload variable to my_file_storage file</i>
+    <b>if</b> <i>&apos;upload&apos;</i> <tt>in</tt> req.form <tt>and</tt> req.form[<i>&apos;upload&apos;</i>].filename:
+        <b>with</b> <kbd>open</kbd>(<i>&apos;my_file_storage&apos;</i>, <i>&apos;w+b&apos;</i>) <b>as</b> f:
+            f.write(req.form[<i>&apos;upload&apos;</i>].file.read())
+</pre>
+
+<a name="own-file-callback"></a><h3>Own file callback<span class="links"><a href="#own-file-callback">link</a> | <a href="#">top</a></span></h3>
+<p>Sometimes, you want to use your own file_callback, because you don&apos;t want to
+use TemporaryFile as storage for this upload files. You can do it with simple
+adding class, which is io.FileIO class in Python 3.x. Next only set
+<a href="api.html#Application.file_callback" title="(True, True, False)">Application.file_callback</a> property.</p>
+
+<pre class="code python">
+<b>from</b> <a href="api.html#poorwsgi" title="module">poorwsgi</a> <b>import</b> <a href="api.html#Application" title="class">Application</a>
+<b>from</b> io <b>import</b> FileIO
+
+app = <a href="api.html#Application" title="class">Application</a>(<i>&apos;test&apos;</i>)
+app.file_callback = FileIO
+</pre>
+<p>As you can see, this example works, but it is so bad solution of your problem.
+Little bit better solution will be, if you store files only if exist and only
+to special separate dictionary, which could be configurable. That you need use
+factory to create file_callback. In next example is write own form parsering,
+which is not important, when <cite>file_callback</cite>  could be set via <a href="api.html#Application" title="class">Application</a>
+property.</p>
+
+<pre class="code python">
+<b>from</b> io <b>import</b> FileIO
+<b>from</b> os.path <b>import</b> exists
+
+<b>from</b> <a href="api.html#poorwsgi" title="module">poorwsgi</a> <b>import</b> <a href="api.html#Application" title="class">Application</a>, <a href="api.html#state" title="module">state</a>, <a href="api.html#request" title="module">request</a>
+
+app = <a href="api.html#Application" title="class">Application</a>(<i>&apos;test&apos;</i>)
+
+
+<b>class</b> <em>Storage</em>(FileIO):
+    <b>def</b> <em>__init__</em>(<kbd>self</kbd>, directory, filename):
+        <kbd>self</kbd>.path = directory + <i>&apos;/&apos;</i> + filename
+        <b>if</b> exists(<kbd>self</kbd>.path):
+            <b>raise</b> <kbd>Exception</kbd>(<i>&quot;File </i><i>%s</i><i> exist yet&quot;</i> % filename)
+        <kbd>super</kbd>(Storage, <kbd>self</kbd>).<em>__init__</em>(<kbd>self</kbd>.path, <i>&apos;w+b&apos;</i>)
+
+<b>class</b> <em>StorageFactory</em>:
+    <b>def</b> <em>__init__</em>(<kbd>self</kbd>, directory):
+        <kbd>self</kbd>.directory = directory
+        <b>if</b> <tt>not</tt> exists(directory):
+            os.mkdir(directory)
+
+    <b>def</b> <em>create</em>(<kbd>self</kbd>, filename):
+        <b>return</b> Storage(<kbd>self</kbd>.directory, filename)
+
+<i># disable automatic <a href="api.html#request" title="module">request</a> body parsing - IMPORTANT !</i>
+app.auto_form = <kbd>False</kbd>
+
+<var>@app.before_request</var>()
+<b>def</b> <em>auto_form</em>(req):
+    <i>&quot;&quot;&quot; Own implementation of req.form paring before any POST <a href="api.html#request" title="module">request</a>
+        with own file_callback.
+    &quot;&quot;&quot;</i>
+    <b>if</b> req.method_number == <a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_POST" title="4">METHOD_POST</a>:
+        factory = StorageFactory(<i>&apos;./upload&apos;</i>)
+        <b>try</b>:
+            req.form = <a href="api.html#request" title="module">request</a>.<a href="api.html#FieldStorage" title="class">FieldStorage</a>(
+                req,
+                keep_blank_values=app.keep_blank_values,
+                strict_parsing=app.strict_parsing,
+                file_callback=factory.create)
+        <b>except</b> <kbd>Exception</kbd> <b>as</b> e:
+            req.log_error(e)
+</pre>
+
+<a name="proccess-variables"></a><h3>Proccess variables<span class="links"><a href="#proccess-variables">link</a> | <a href="#">top</a></span></h3>
+<p>Here is appliation variables, which is used to confiure <a href="api.html#request" title="module">request</a> processing,
+resp. which configure processing with <a href="api.html#request" title="module">request</a>.</p>
+
+
+<a name="application-auto-args"></a><h4><a href="api.html#Application.auto_args" title="(True, True, False)">Application.auto_args</a><span class="links"><a href="#application-auto-args">link</a> | <a href="#">top</a></span></h4>
+<p>If auto_args is set to <code>True</code>, which is default, <a href="api.html#Request" title="class">Request</a> object parse input
+arguments from <a href="api.html#request" title="module">request</a> uri at initialisation. There will be <code><a href="api.html#Request.args" title="(True, True, False)">Request.args</a></code>
+property, which is instance of <code><a href="api.html#Args" title="class">Args</a></code> class. If you want to off this
+functionality, set this property to <code>False</code>. If argument parsing is disabled,
+<code><a href="api.html#Request.args" title="(True, True, False)">Request.args</a></code> will be instance of <code><a href="api.html#EmptyForm" title="class">EmptyForm</a></code> with same interface and no
+data.</p>
+
+
+<a name="application-auto-form"></a><h4><a href="api.html#Application.auto_form" title="(True, True, False)">Application.auto_form</a><span class="links"><a href="#application-auto-form">link</a> | <a href="#">top</a></span></h4>
+<p>If auto_form is set to <code>True</code>, which is default, <a href="api.html#Request" title="class">Request</a> object parse input
+arguments from <a href="api.html#request" title="module">request</a> body at initialisation when <a href="api.html#request" title="module">request</a> type is POST, PUT
+or PATCH. There will be <code><a href="api.html#Request.form" title="(True, True, False)">Request.form</a></code> property which is instance of
+<code><a href="api.html#FieldStorage" title="class">FieldStorage</a></code> class. If you want to off this functionality, set this property
+to <code>False</code>. If form parsing is disabled, or json is detected, <code><a href="api.html#Request.form" title="(True, True, False)">Request.form</a></code>
+will be instance of <code><a href="api.html#EmptyForm" title="class">EmptyForm</a></code> with same interface and no data.</p>
+
+
+<a name="application-form-mime-types"></a><h4><a href="api.html#Application.form_mime_types" title="(True, False, False)">Application.form_mime_types</a><span class="links"><a href="#application-form-mime-types">link</a> | <a href="#">top</a></span></h4>
+<p>List of mime types, which is paresed as input form by <code><a href="api.html#FieldStorage" title="class">FieldStorage</a></code> class.
+If input <a href="api.html#request" title="module">request</a> does not have set one of these mime types, that form was not
+parsed.</p>
+
+
+<a name="application-file-callback"></a><h4><a href="api.html#Application.file_callback" title="(True, True, False)">Application.file_callback</a><span class="links"><a href="#application-file-callback">link</a> | <a href="#">top</a></span></h4>
+<p>Class or function, which is used to store file from form. See
+<a href="#own-file-callback">own file callback</a> for more details.</p>
+
+
+<a name="application-auto-json"></a><h4><a href="api.html#Application.auto_json" title="(True, True, False)">Application.auto_json</a><span class="links"><a href="#application-auto-json">link</a> | <a href="#">top</a></span></h4>
+<p>If it is <code>True</code>, which is default, method is POST, PUT or PATCH and <a href="api.html#request" title="module">request</a>
+mime type is json, than <a href="api.html#Request" title="class">Request</a> object do automatic parsing <a href="api.html#request" title="module">request</a> body to
+<code><a href="api.html#Request.json" title="(True, False, False)">Request.json</a></code> dict property. If is disabled, or if form is detected, then
+<code><a href="api.html#EmptyForm" title="class">EmptyForm</a></code> instance is set.</p>
+
+
+<a name="application-json-mime-types"></a><h4><a href="api.html#Application.json_mime_types" title="(True, False, False)">Application.json_mime_types</a><span class="links"><a href="#application-json-mime-types">link</a> | <a href="#">top</a></span></h4>
+<p>List of mime types, which is paresed as json by <code>json.loads</code> function.
+If input <a href="api.html#request" title="module">request</a> does not have set one of these mime types, that
+<code><a href="api.html#Request.json" title="(True, False, False)">Request.json</a></code> was not parsed.</p>
+
+
+<a name="application-keep-blank-values"></a><h4><a href="api.html#Application.keep_blank_values" title="(True, True, False)">Application.keep_blank_values</a><span class="links"><a href="#application-keep-blank-values">link</a> | <a href="#">top</a></span></h4>
+<p>This property is set for input parameters to automatically calling <a href="api.html#Args" title="class">Args</a> and
+<a href="api.html#FieldStorage" title="class">FieldStorage</a> classes, when auto_args resp. auto_form is set. By default this
+property is set to <code>0</code>. If it set to <code>1</code>, blank values should be interpret
+as empty strings.</p>
+
+
+<a name="application-strict-parsing"></a><h4><a href="api.html#Application.strict_parsing" title="(True, True, False)">Application.strict_parsing</a><span class="links"><a href="#application-strict-parsing">link</a> | <a href="#">top</a></span></h4>
+<p>This property is set for input parameter to automatically calling <a href="api.html#Args" title="class">Args</a> and
+<a href="api.html#FieldStorage" title="class">FieldStorage</a> classes. when auto_args resp. auto_form is set. By default this
+variable is set to <code>0</code>. If is set to <code>1</code>, ValueError exception
+could raise on parsing error. I&apos;m sure, that you never want to set this
+variable to <code>1</code>. If so, use it in your own parsing.</p>
+
+<pre class="code python">
+app.auto_form = <kbd>False</kbd>
+app.auto_args = <kbd>False</kbd>
+app.strict_parsing = <u>1</u>
+
+<var>@app.before_request</var>()
+<b>def</b> <em>auto_form_and_args</em>(req):
+    <i>&quot;&quot;&quot; This is own implementation of req.form and req.args paring &quot;&quot;&quot;</i>
+    <b>try</b>:
+        req.args = <a href="api.html#request" title="module">request</a>.<a href="api.html#Args" title="class">Args</a>(req,
+                                keep_blank_values=app.keep_blank_values,
+                                strict_parsing=app.strict_parsing)
+    <b>except</b> <kbd>Exception</kbd> <b>as</b> e:
+        <a href="api.html#log" title="submodule">log</a>.error(<i>&quot;Bad <a href="api.html#request" title="module">request</a> uri: </i><i>%s</i><i>&quot;</i>, e)
+
+    <b>if</b> req.method_number == <a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_POST" title="4">METHOD_POST</a>:
+        <b>try</b>:
+            req.form = <a href="api.html#request" title="module">request</a>.<a href="api.html#FieldStorage" title="class">FieldStorage</a>(
+                req,
+                keep_blank_values=app.keep_blank_values,
+                strict_parsing=app.strict_parsing)
+        <b>except</b> <kbd>Exception</kbd> <b>as</b> e:
+            <a href="api.html#log" title="submodule">log</a>.error(<i>&quot;Bad <a href="api.html#request" title="module">request</a> body: </i><i>%s</i><i>&quot;</i>, e)
+</pre>
+
+<a name="application-auto-cookies"></a><h4><a href="api.html#Application.auto_cookies" title="(True, True, False)">Application.auto_cookies</a><span class="links"><a href="#application-auto-cookies">link</a> | <a href="#">top</a></span></h4>
+<p>When auto_cookies is set to <code>True</code>, which is default, <code><a href="api.html#Request.cookies" title="(True, False, False)">Request.cookies</a></code>
+property is set when <a href="api.html#request" title="module">request</a> heades contains <code>Cookie</code> header. Otherwise
+empty tupple will be set.</p>
+
+
+<a name="application-user-options"></a><h2><a href="api.html#Application" title="class">Application</a> / User options<span class="links"><a href="#application-user-options">link</a> | <a href="#">top</a></span></h2>
+<p>Like in mod_python <a href="api.html#Request" title="class">Request</a>, Poor WSGI <a href="api.html#Request" title="class">Request</a> have get_options method too.
+This method return dictionary of application options or variables, which start
+with <code>app_</code> prefix. This prefix is cut from options names.</p>
+
+<pre class="code ini">
+[uwsgi]                                         # uwsgi config example
+...
+env = <i>app_db_file = mywebapp.db                 # variable is db_file</i>
+env = <i>app_tmp_path = tmp                        # variable is tmp_path</i>
+env = <i>app_templ = templ                         # variable is templ</i>
+</pre>
+<p>And you can get these variables with get_options method:</p>
+
+<pre class="code python">
+config = <kbd>None</kbd>
+
+<var>@app.before_request</var>()
+<b>def</b> <em>load_options</em>(req):
+    <b>global</b> config
+    <b>if</b> config <tt>is</tt> <kbd>None</kbd>:
+        config = req.get_options()
+    req.config = config
+
+<var>@app.route</var>(<i>&apos;/options&apos;</i>)
+<b>def</b> <em>list_options</em>(req):
+    <b>return</b> (<i>&quot;</i><i>%s</i><i> = </i><i>%s</i><i>&quot;</i> % (key, val) <tt>in</tt> req.config.items())
+</pre>
+<p>Output of application url /options looks like:</p>
+
+<pre>
+db_file = mywebapp.db
+tmp_path = tmp
+templ = templ
+</pre>
+<p>As you can see, you can store your variables to <a href="api.html#request" title="module">request</a> object. There are few
+reserved variables for you, which <a href="api.html#poorwsgi" title="module">poorwsgi</a> never use, and which are None by
+default:</p>
+
+<table class="field_list">
+<tr><th>req.config:</th><td><p>for your config object</p>
+</td></tr>
+<tr><th>req.user:</th><td><p>for user object, who is login</p>
+</td></tr>
+<tr><th>req.app_:</th><td><p>as prefix for any your application variable</p>
+</td></tr>
+</table>
+<p>So if you want to add any other variable, be careful to named it.</p>
+
+
+<a name="headers-and-sessions"></a><h2><a href="api.html#Headers" title="class">Headers</a> and Sessions<span class="links"><a href="#headers-and-sessions">link</a> | <a href="#">top</a></span></h2>
+
+<a name="request-headers"></a><h3><a href="api.html#Request" title="class">Request</a> <a href="api.html#Headers" title="class">Headers</a><span class="links"><a href="#request-headers">link</a> | <a href="#">top</a></span></h3>
+<p>We talk about headers in a few paragraph before. Now is time to more
+information about that. <a href="api.html#Request" title="class">Request</a> object have headers_in attribute, which is
+instance of wshiref.headers.<a href="api.html#Headers" title="class">Headers</a>. This headers contains <a href="api.html#request" title="module">request</a> headers
+from client like in mod_python. You can read it as you can.</p>
+
+<p>Next to it there are some <a href="api.html#Request" title="class">Request</a> properties, to get parset header values.</p>
+
+<table class="field_list">
+<tr><th>headers:</th><td><p>Full headers object.</p>
+</td></tr>
+<tr><th>mime_type:</th><td><p>Return mime type part from <code>Content-Type</code> header</p>
+</td></tr>
+<tr><th>charset:</th><td><p>Return charset part from <code>Content-Type</code> header</p>
+</td></tr>
+<tr><th>content_length:</th><td><p>Return content length if <code>Content-Length</code> header is set,
+or -1 if not.</p>
+</td></tr>
+<tr><th>accept:</th><td><p>List of <code>Accept</code> content neogetions set.</p>
+</td></tr>
+<tr><th>accept_charset:</th><td><p>List of <code>Accept-Charset</code> content neogetions set.</p>
+</td></tr>
+<tr><th>accept_encoding:</th><td><p>List of <code>Accept-Encoding</code> content neogetions set.</p>
+</td></tr>
+<tr><th>accept_language:</th><td><p>List of <code>Accept-Language</code> content neogetions set.</p>
+</td></tr>
+<tr><th>accept_html:</th><td><p>True if <code>text/html</code> mime type is in <code>Accept</code> header.</p>
+</td></tr>
+<tr><th>accept_xhtml:</th><td><p>True if <code>text/xhtml</code> mime type is in <code>Accept</code> header.</p>
+</td></tr>
+<tr><th>accept_json:</th><td><p>True if <code>application/json</code> mime type is in <code>Accept</code>
+header.</p>
+</td></tr>
+<tr><th>is_xhr:</th><td><p>True if <code>X-Requested-With</code> is <code>XMLHttpRequest</code>.</p>
+</td></tr>
+<tr><th>cookies:</th><td><p>Cooike object created from <code>Cookie</code> header or empty tuple.</p>
+</td></tr>
+<tr><th>referer:</th><td><p>Http referer from <code>Referer</code> header or None</p>
+</td></tr>
+<tr><th>user_agent:</th><td><p>User&apos;s client from <code>User-Agent</code> header or None.</p>
+</td></tr>
+<tr><th>forwarded_for:</th><td><p>Value of <code>X-Forward-For</code> header or None.</p>
+</td></tr>
+<tr><th>forwarded_host:</th><td><p>Value of <code>X-Forward-Host</code> header or None.</p>
+</td></tr>
+<tr><th>forwarded_proto:</th><td><p>Value of <code>X-Forward-Proto</code> header or None.</p>
+</td></tr>
+</table>
+
+<a name="response-headers"></a><h3>Response <a href="api.html#Headers" title="class">Headers</a><span class="links"><a href="#response-headers">link</a> | <a href="#">top</a></span></h3>
+<p>Response headers is the same <a href="api.html#Request" title="class">Request</a>.<a href="api.html#Headers" title="class">Headers</a> class as in <a href="api.html#request" title="module">request</a> object. But
+you can create it. If you don&apos;t set header when you create Response object,
+default <code>X-Powered-By</code> header is set to &quot;Poor WSGI for Python&quot;. The
+<code>Content-Type</code> and <code>Content-Length</code> headers are append automatically.
+All headers keys must be set once, except of <code>Set-Cookie</code>, which could be set
+more times.</p>
+
+<pre class="code python">
+<var>@app.route</var>(<i>&apos;/some/uri&apos;</i>)
+<b>def</b> <em>some_uri</em>(req):
+    xparam = <kbd>int</kbd>(req.headers.get(<i>&apos;X-Param&apos;</i>, <i>&apos;0&apos;</i>))
+    <i># res.headers will have X-Powered-By, Content-Type and Content-Length</i>
+    res = Response(<i>&quot;O yea!&quot;</i>, content_type=<i>&quot;text/plain&quot;</i>)
+    <i># res.headers[&quot;S-Param&quot;] = &quot;00&quot; by default</i>
+    res.add_header(<i>&quot;S-Param&quot;</i>, xparam*<u>2</u>)
+    <b>return</b> res
+</pre>
+
+<a name="sessions"></a><h3>Sessions<span class="links"><a href="#sessions">link</a> | <a href="#">top</a></span></h3>
+<p>Like in mod_python, in poor WSGI is <a href="api.html#session" title="module">session</a> class <a href="api.html#PoorSession" title="class">PoorSession</a>. It is
+self-contained cookie which have data dictionary. Data are sent to client in
+<a href="api.html#hidden" title="(text, passwd)">hidden</a>, bzip2ed, base64 encoded format. In read this <a href="api.html#session" title="module">session</a>, expires value
+are check from data, so client can&apos;t change it in simple way. That is
+important to right set poor_SecretKey variable which is used in class by
+<a href="api.html#hidden" title="(text, passwd)">hidden</a> function.</p>
+
+<pre class="code python">
+<b>from</b> <a href="api.html#poorwsgi" title="module">poorwsgi</a> <b>import</b> <a href="api.html#Application" title="class">Application</a>, <a href="api.html#state" title="module">state</a>, redirect
+<b>from</b> <a href="api.html#poorwsgi" title="module">poorwsgi</a>.<a href="api.html#session" title="module">session</a> <b>import</b> <a href="api.html#PoorSession" title="class">PoorSession</a>
+<b>from</b> os <b>import</b> urandom
+<b>import</b> logging <b>as</b> <a href="api.html#log" title="submodule">log</a>
+
+app = <a href="api.html#Application" title="class">Application</a>(<i>&apos;test&apos;</i>)
+app.secret_key = urandom(<u>32</u>)                    <i># random secret_key</i>
+
+<b>def</b> <em>check_login</em>(fn):
+    <b>def</b> <em>handler</em>(req):
+        cookie = <a href="api.html#PoorSession" title="class">PoorSession</a>(req)
+        <b>if</b> <i>&quot;passwd&quot;</i> <tt>not</tt> <tt>in</tt> cookie.data:         <i># expires or didn&apos;t set</i>
+            <a href="api.html#log" title="submodule">log</a>.info(<i>&quot;Login cookie not found.&quot;</i>)
+            redirect(<i>&quot;/login&quot;</i>, message=<i>b</i><i>&quot;Login required&quot;</i>)
+        <b>return</b> fn(req)
+    <b>return</b> handler
+
+<var>@app.route</var>(<i>&apos;/login&apos;</i>, method=<a href="api.html#state" title="module">state</a>.<a href="api.html#METHOD_GET_POST" title="7">METHOD_GET_POST</a>)
+<b>def</b> <em>login</em>(req):
+    <b>if</b> req.method == <i>&apos;POST&apos;</i>:
+        passwd = req.form.getfirst(<i>&apos;passwd&apos;</i>, fce=<kbd>str</kbd>)
+        <b>if</b> passwd != <i>&apos;SecretPasswds&apos;</i>:
+            <a href="api.html#log" title="submodule">log</a>.info(<i>&apos;Bad password&apos;</i>)
+            redirect(<i>&apos;/login&apos;</i>, text=<i>&apos;Bad password&apos;</i>)
+
+        response = RedirectResponse(<i>&quot;/private/uri&quot;</i>)
+        cookie = <a href="api.html#PoorSession" title="class">PoorSession</a>(req)
+        cookie.data[<i>&apos;passwd&apos;</i>] = passwd
+        cookie.header(response)
+        abort(response)
+
+    <b>return</b> <i>&apos;some html login form&apos;</i>
+
+
+<var>@app.route</var>(<i>&apos;/private/uri&apos;</i>)
+<var>@check_login</var>
+<b>def</b> <em>private_uri</em>(req):
+    <b>return</b> <i>&apos;Some private data&apos;</i>
+
+
+<var>@app.route</var>(<i>&apos;/logout&apos;</i>)
+<b>def</b> <em>logout</em>(req):
+    response = RedirectResponse(<i>&quot;/login&quot;</i>)
+    cookie = <a href="api.html#PoorSession" title="class">PoorSession</a>(req)
+    cookie.destroy()
+    cookie.header(response)
+    <b>return</b> response
+</pre>
+
+<a name="debugging"></a><h2>Debugging<span class="links"><a href="#debugging">link</a> | <a href="#">top</a></span></h2>
+<p>Poor WSGI have few debugging mechanism which you can to use. First, it could
+be good idea to set up poor_Debug variable. If this variable is set, there are
+full traceback on error page <a href="api.html#internal_server_error" title="(req)">internal_server_error</a> with http code 500.</p>
+
+<p>Second effect of this variable is enabling special debug page on
+<code>/debug-info</code> url. On this page, you can found:</p>
+
+<blockquote>
+<ul type="circle">
+<li><p>full handlers table with requests, http <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> and handlers which are
+call to serve this requests.</p></li>
+<li><p>http <a href="api.html#state" title="module">state</a> handlers table with http <a href="api.html#state" title="module">state</a> codes, http <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> and handlers
+which are call when this http <a href="api.html#state" title="module">state</a> is returned.</p></li>
+<li><p><a href="api.html#request" title="module">request</a> headers table from your browser when you call this debug <a href="api.html#request" title="module">request</a></p></li>
+<li><p>poor <a href="api.html#request" title="module">request</a> variables, which are setting of actual instance of Poor WSGI
+configuration variables.</p></li>
+<li><p>application variables which are set like a connector variables but with
+app_ prefix.</p></li>
+<li><p><a href="api.html#request" title="module">request</a> environment, which is set from your <a href="api.html#wsgi" title="module">wsgi</a> server to <a href="api.html#wsgi" title="module">wsgi</a>
+application, so to Poor WSGI connector.</p></li>
+</ul>
+
+</blockquote>
+
+<a name="profiling"></a><h3>Profiling<span class="links"><a href="#profiling">link</a> | <a href="#">top</a></span></h3>
+<p>If you want to profile your <a href="api.html#request" title="module">request</a> code, you can do with profiler. Poor WSGI
+application object have <a href="api.html#methods" title="{'HEAD': 1, 'GET': 2, 'POST': 4, 'PUT': 8, 'DELETE': 16, 'TRACE': 32, 'OPTIONS': 64, 'CONNECT': 128, 'PATCH': 256}">methods</a> to set profiling. You must only prepare runctx
+function, which is call before all your <a href="api.html#request" title="module">request</a>. From each your <a href="api.html#request" title="module">request</a> will
+be generate .profile dump file, which you can study.</p>
+
+<p>If you want to profile all process after start your application, you can make
+file, which profile importing your application, which import Poor WSGI
+connector.</p>
+
+<pre class="code python">
+<b>import</b> cProfile
+
+<i># this import your application, which import Poor WSGI, so you can profile</i>
+<i># first server init, which is do, when server import your application.</i>
+<i># don&apos;t forget to import this file instead of simple.py or your</i>
+<i># application file</i>
+cProfile.runctx(<i>&apos;from simple import *&apos;</i>, <kbd>globals</kbd>(), <kbd>locals</kbd>(),
+                filename=<i>&quot;<a href="api.html#log" title="submodule">log</a>/init.profile&quot;</i>)
+
+<i># and this sets profiling of any <a href="api.html#request" title="module">request</a> which is server by your</i>
+<i># web application</i>
+app.set_profile(cProfile.runctx, <i>&apos;<a href="api.html#log" title="submodule">log</a>/req&apos;</i>)
+</pre>
+<p>When you use this file instead of your application file, simple.py for
+example, application create files in <a href="api.html#log" title="submodule">log</a> directory. First file will be
+init.profile from first import by WSGI server. Other files will look like
+req_.profile, req_debug-info.profile etc. Second parameter of set_profile
+method is prefix of output file names. File name are create from url path, so
+each url create file.</p>
+
+<p>There is nice tool to view this profile files runsnakerun. You can download it
+from <a href="http://www.vrplumber.com/programming/runsnakerun/">http://www.vrplumber.com/programming/runsnakerun/</a>. Using that is very
+simple just open profile file:</p>
+
+<pre class="code sh">
+$~ python runsnake.py <a href="api.html#log" title="submodule">log</a>/init.profile
+$~ python runsnake.py <a href="api.html#log" title="submodule">log</a>/req_.profile
+</pre>
+</div>
+    </div>      <div class="footer">
+        <div class="line"></div>
+        <div class="credit">
+            Create by Ondřej Tůma (<a href="http://ipv6.mcbig.cz">McBig</a>).
+            &copy; 2013. Generate by
+            <a href="http://poorhttp.zeropage.cz/jinja24doc.html">Jinja24doc</a>.
+        </div>
+      </div><!-- footer --!>
+    </div><!-- page --!>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Poor WSGI homepage documentation">
+    <meta name="author" content="Ondřej Tůma McBig">
+
+    <title>Poor WSGI for Python</title>
+
+    <link href="style.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <div class="page">
+
+      <div class="header">
+        <h1>Poor WSGI for Python</h1>
+        <small>Light WSGI connector with uri routing support.</small>
+        <div class="pannel">
+          <menu class="main">
+            <span class="item ">
+                <a href="index.html" title="" >About</a></span>
+            <span class="item selected">
+                <a href="install.html" title="" >Install &amp; Config</a></span>
+             <span class="item ">
+                <a href="documentation.html" title="" >Documentation</a></span>
+            <span class="item ">
+                <a href="api.html" title="" >Api Reference</a></span>
+            <span class="item ">
+                <a href="licence.html" title="">Licence</a></span>
+            <span class="item">
+                <a href="https://github.com/PoorHttp/PoorWSGI">GitHub</a></span>
+            <span class="item"
+                ><a href="https://pypi.python.org/pypi/PoorWSGI">PyPI</a></span>
+          </menu>        </div>      </div>
+
+
+      <menu class="sidebar">
+<h2><a href="#install">Install</a></h2>
+<h3><a href="#source-tarbal">Source tarbal</a></h3>
+<h3><a href="#source-from-git">Source from git</a></h3>
+<h3><a href="#install-from-pypi">Install from PyPI</a></h3>
+<h3><a href="#unstable-version">Unstable version</a></h3>
+<h2><a href="#configuration">Configuration</a></h2>
+<h3><a href="#options">Options</a></h3>
+<h3><a href="#poor-http-server-example">Poor HTTP server example</a></h3>
+<h3><a href="#uwsgi-server-example">uWsgi server example</a></h3>
+      </menu>
+
+    <div class="content">
+      <div>
+<a name="install"></a><h2>Install<span class="links"><a href="#install">link</a> | <a href="#">top</a></span></h2>
+
+<a name="source-tarbal"></a><h3>Source tarbal<span class="links"><a href="#source-tarbal">link</a> | <a href="#">top</a></span></h3>
+<pre class="code sh">
+~$ wget https://pypi.python.org/packages/source/P/PoorWSGI/PoorWSGI-2.0.0.tar.gz
+~$ tar xzf PoorWSGI-2.0.0.tar.gz
+~$ <kbd>cd</kbd> PoorWSGI-2.0.0
+~$ pip3 install .
+
+<i># if you have jinja24doc and you want to install this html documentation
+</i>~$ python3 setup.py install_html
+</pre>
+
+<a name="source-from-git"></a><h3>Source from git<span class="links"><a href="#source-from-git">link</a> | <a href="#">top</a></span></h3>
+<pre class="code sh">
+~$ git clone git@github.com:PoorHttp/PoorWSGI.git
+or
+~$ git clone https://github.com/PoorHttp/PoorWSGI.git
+
+~$ <kbd>cd</kbd> PoorWSGI
+~$ pip3 install .
+
+<i># if you have jinja24doc and you want to install this html documentation
+</i>~$ python3 setup.py install_html
+</pre>
+
+<a name="install-from-pypi"></a><h3>Install from PyPI<span class="links"><a href="#install-from-pypi">link</a> | <a href="#">top</a></span></h3>
+<pre class="code sh">
+~$ pip3 install PoorWSGI
+</pre>
+
+<a name="unstable-version"></a><h3>Unstable version<span class="links"><a href="#unstable-version">link</a> | <a href="#">top</a></span></h3>
+<p>Developing of next version is pushed to <code>unstable</code> branch. If you want to use
+this version, you must install it from git.</p>
+
+<pre class="code sh">
+~$ git clone git@github.com:PoorHttp/PoorWSGI.git
+<i># or
+</i>~$ git clone https://github.com/PoorHttp/PoorWSGI.git
+
+~$ <kbd>cd</kbd> PoorWSGI
+~$ git checkout unstable
+~$ pip3 install .
+</pre>
+<p>Or you can download zip file from GitHub.</p>
+
+<pre class="code sh">
+~$ wget https://github.com/PoorHttp/PoorWSGI/archive/unstable.zip
+~$ unzip unstable.zip
+~$ <kbd>cd</kbd> PoorWSGI-unstable
+~$ pip3 install .
+</pre>
+<!-- Documentation for new version is at `&lt;unstable&gt;`_. -->
+
+<a name="configuration"></a><h2>Configuration<span class="links"><a href="#configuration">link</a> | <a href="#">top</a></span></h2>
+<p>Poor WSGI is configured via environment variables with poor_* prefix.</p>
+
+
+<a name="options"></a><h3>Options<span class="links"><a href="#options">link</a> | <a href="#">top</a></span></h3>
+
+<a name="poor-debug"></a><h4>poor_Debug<span class="links"><a href="#poor-debug">link</a> | <a href="#">top</a></span></h4>
+<p>If poor_Debug is <code>On</code>, internal server error page have debug traceback and
+<code>/debug-info</code> page is activate.</p>
+
+
+<a name="poor-documentindex"></a><h4>poor_DocumentIndex<span class="links"><a href="#poor-documentindex">link</a> | <a href="#">top</a></span></h4>
+<p>If poor_DocumentRoot is set and poor_DocumentIndex is <code>On</code>, poor WSGI can
+generate document index from dictionary like real http servers. Default is
+<code>Off</code>.</p>
+
+
+<a name="poor-documentroot"></a><h4>poor_DocumentRoot<span class="links"><a href="#poor-documentroot">link</a> | <a href="#">top</a></span></h4>
+<p>pooor_DocumentRoot is dictionary, which is accessible files from. Files are
+sent via <a href="api.html#Request" title="class">Request</a>.sendfile method, which is not optimized yet. Method reads
+data for poor_BufferSize size blocks. And of course, before files is set,
+right <code>Content-Type</code> from mime-type and <code>Content-Length</code> headers are set.</p>
+
+
+<a name="poor-secretkey"></a><h4>poor_SecretKey<span class="links"><a href="#poor-secretkey">link</a> | <a href="#">top</a></span></h4>
+<p>If you want to use <a href="api.html#PoorSession" title="class">PoorSession</a> class, as self-contained cookie, it is
+<b>important</b> to set poor_SecretKey as pass phrase for <a href="api.html#hidden" title="(text, passwd)">hidden</a> function, which is
+call from <a href="api.html#PoorSession" title="class">PoorSession</a> class. Default is not set, without that,
+<a href="api.html#PoorSession.__init__" title="(self, req, expires=0, path='/', SID='SESSID', compress=<module 'bz2' from '/usr/lib/python3.6/bz2.py'>)">PoorSession.__init__</a> throw <b>RuntimeError</b>.</p>
+
+
+<a name="poor-http-server-example"></a><h3>Poor HTTP server example<span class="links"><a href="#poor-http-server-example">link</a> | <a href="#">top</a></span></h3>
+<p>Poor WSGI variables are system environment variables, which could be set in
+<code>environ</code> section in poorhttp.ini file. Only python file with <code>application</code>
+function or class must be set in predefined variable in <code>http</code> section:</p>
+
+<pre class="code ini">
+<b>[http]</b>
+...
+<i># your main python file, where app, resp. application from <a href="api.html#wsgi" title="module">wsgi</a> module</i>
+<i># is imported</i>
+application = <i>/srv/simple.py</i>
+
+...
+<b>[environ]</b>
+<i># debug - internal server errror page with traceback, debug-info page</i>
+poor_Debug = <i>Off</i>
+poor_DocumentRoot = <i>/srv/public</i>
+poor_DocumentIndex = <i>On</i>
+</pre>
+
+<a name="uwsgi-server-example"></a><h3>uWsgi server example<span class="links"><a href="#uwsgi-server-example">link</a> | <a href="#">top</a></span></h3>
+<p>uWsgi server have more choices how is configurable. Here is it&apos;s ini file,
+which have one <code>uwsgi</code> section with <code><a href="api.html#wsgi" title="module">wsgi</a>-file</code> variable, where we need
+to set your main python file, and lots of env variables, which is use to set
+environment variables.</p>
+
+<pre class="code ini">
+<b>[uwsgi]</b>
+...
+<i># your main python file, where app, resp. application from <a href="api.html#wsgi" title="module">wsgi</a> module</i>
+<i># is imported</i>
+<a href="api.html#wsgi" title="module">wsgi</a>-file = <i>/srv/simple.py</i>
+
+<i># variables must be set without space between variable equation and value</i>
+env = <i>poor_Debug=On</i>
+env = <i>poor_DocumentRoot=/srv/public</i>
+env = <i>poor_SecretKey=MyApplication@Super!Secret?Password:-)</i>
+</pre>
+</div>
+    </div>      <div class="footer">
+        <div class="line"></div>
+        <div class="credit">
+            Create by Ondřej Tůma (<a href="http://ipv6.mcbig.cz">McBig</a>).
+            &copy; 2013. Generate by
+            <a href="http://poorhttp.zeropage.cz/jinja24doc.html">Jinja24doc</a>.
+        </div>
+      </div><!-- footer --!>
+    </div><!-- page --!>
+  </body>
+</html>
